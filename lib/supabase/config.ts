@@ -1,0 +1,5 @@
+export const SUPABASE_URL =
+process.env.NEXT_PUBLIC_SUPABASE_URL || "https://hdavdrkthcaruehdfeeu.supabase.co";
+export const SUPABASE_ANON_KEY =
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkYXZkcmt0aGNhcnVlaGRmZWV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NjIzMTQsImV4cCI6MjEwMTIzODMxNH0.u6Q10Rt7XzCodp4W4unqFUpIkQzFoBHx_k3Aypq_4Yk";
