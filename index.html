@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Minowa — Gestão Automotiva</title>
+  <title>Minowa Veículos</title>
   <style>
-    /* ===== Variáveis (extraídas do CSS original) ===== */
+    /* ===== Variáveis ===== */
     :root {
       --bg-page: #0c0c0d;
       --bg-card: #161617;
@@ -15,7 +15,6 @@
       --accent: #e0263c;
     }
 
-    /* ===== Reset & base ===== */
     * {
       box-sizing: border-box;
     }
@@ -23,14 +22,17 @@
       margin: 0;
       background: var(--bg-page);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     a {
       text-decoration: none;
       color: var(--text-secondary);
     }
+    .hidden {
+      display: none !important;
+    }
 
-    /* ===== Páginas de autenticação (login / signup) ===== */
+    /* ===== Auth ===== */
     .auth-page {
       min-height: 100vh;
       display: flex;
@@ -95,16 +97,6 @@
     .auth-button:hover {
       opacity: 0.85;
     }
-    .auth-link {
-      margin-top: 16px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      text-align: center;
-      cursor: pointer;
-    }
-    .auth-link:hover {
-      color: var(--text-primary);
-    }
     .auth-error {
       color: #ff5c5c;
       font-size: 13px;
@@ -112,7 +104,7 @@
       display: none;
     }
 
-    /* ===== Layout principal (dashboard) ===== */
+    /* ===== Layout ===== */
     .layout {
       display: flex;
       min-height: 100vh;
@@ -173,7 +165,7 @@
       color: var(--text-primary);
     }
 
-    /* ===== Conteúdo principal ===== */
+    /* ===== Main ===== */
     .main {
       flex: 1;
       padding: 32px 40px;
@@ -190,10 +182,52 @@
     }
     .page-header-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+    }
+    .btn-whatsapp {
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-whatsapp:hover {
+      opacity: 0.8;
     }
 
     /* ===== Cards ===== */
@@ -209,7 +243,7 @@
       border-radius: 10px;
       padding: 20px;
       flex: 1;
-      min-width: 200px;
+      min-width: 160px;
     }
     .card-label {
       font-size: 13px;
@@ -220,13 +254,8 @@
       font-size: 30px;
       font-weight: 700;
     }
-    .card-hint {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-    }
 
-    /* ===== Tabela / lista ===== */
+    /* ===== Tabelas ===== */
     .table-wrap {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -249,6 +278,7 @@
     td {
       padding: 14px 16px;
       border-bottom: 1px solid var(--border);
+      vertical-align: middle;
     }
     tr:last-child td {
       border-bottom: none;
@@ -262,29 +292,67 @@
       font-size: 12px;
       font-weight: 500;
     }
+    .badge-success {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+    }
 
-    /* ===== Utilitários ===== */
-    .hidden {
-      display: none !important;
+    /* ===== Formulários ===== */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .form-grid input, .form-grid select, .form-grid textarea {
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      font-family: inherit;
+    }
+    .form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-grid label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      display: block;
+    }
+    .form-grid .full-width {
+      grid-column: 1 / -1;
+    }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .img-preview {
+      max-width: 120px;
+      max-height: 80px;
+      border-radius: 6px;
+      object-fit: cover;
     }
 
     /* ===== Responsivo ===== */
     @media (max-width: 700px) {
-      .sidebar {
-        width: 180px;
-        padding: 16px 12px;
-      }
-      .main {
-        padding: 20px;
-      }
-      .card {
-        min-width: 140px;
-      }
+      .sidebar { width: 180px; padding: 16px 12px; }
+      .main { padding: 20px; }
+      .form-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 550px) {
-      .layout {
-        flex-direction: column;
-      }
+      .layout { flex-direction: column; }
       .sidebar {
         width: 100%;
         border-right: none;
@@ -294,10 +362,7 @@
         padding: 12px 16px;
         align-items: center;
       }
-      .sidebar .brand-sub {
-        margin-bottom: 0;
-        margin-left: 6px;
-      }
+      .sidebar .brand-sub { margin-bottom: 0; margin-left: 6px; }
       .sidebar .nav {
         display: flex;
         gap: 4px;
@@ -306,318 +371,672 @@
         width: 100%;
         margin-top: 8px;
       }
-      .sidebar .nav-item {
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-      .sidebar-footer {
-        border-top: none;
-        padding-top: 0;
-        margin-left: auto;
-      }
-      .main {
-        padding: 16px;
-      }
-      .cards-row {
-        gap: 12px;
-      }
-      .card {
-        min-width: 120px;
-        padding: 16px;
-      }
+      .sidebar .nav-item { padding: 6px 12px; font-size: 13px; }
+      .sidebar-footer { border-top: none; padding-top: 0; margin-left: auto; }
+      .main { padding: 16px; }
+      .cards-row { gap: 12px; }
+      .card { min-width: 120px; padding: 16px; }
     }
   </style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- PÁGINA DE LOGIN                                              -->
-<!-- ============================================================ -->
+<!-- ===== LOGIN ===== -->
 <div id="page-login" class="auth-page">
   <div class="auth-card">
     <div class="brand">MINOWA</div>
-    <div class="brand-sub">Gestão Automotiva</div>
-    <h1 class="auth-title">Entrar</h1>
-
+    <div class="brand-sub">Revenda de Veículos</div>
+    <h1 class="auth-title">Acesso Administrativo</h1>
     <label class="auth-label">E-mail</label>
-    <input class="auth-input" id="login-email" type="email" placeholder="seu@email.com" />
-
+    <input class="auth-input" id="login-email" type="email" value="diegoveiculocar@gmail.com" />
     <label class="auth-label">Senha</label>
-    <input class="auth-input" id="login-password" type="password" placeholder="••••••••" />
-
-    <div class="auth-error" id="login-error">E-mail ou senha inválidos.</div>
-
+    <input class="auth-input" id="login-password" type="password" value="minowaveiculos" />
+    <div class="auth-error" id="login-error">Credenciais inválidas.</div>
     <button class="auth-button" id="login-btn">Entrar</button>
-
-    <a class="auth-link" id="go-to-signup">Ainda não tem conta? Criar acesso</a>
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- PÁGINA DE CADASTRO                                           -->
-<!-- ============================================================ -->
-<div id="page-signup" class="auth-page hidden">
-  <div class="auth-card">
-    <div class="brand">MINOWA</div>
-    <div class="brand-sub">Gestão Automotiva</div>
-    <h1 class="auth-title">Criar acesso</h1>
-
-    <label class="auth-label">E-mail</label>
-    <input class="auth-input" id="signup-email" type="email" placeholder="seu@email.com" />
-
-    <label class="auth-label">Senha (mínimo 6 caracteres)</label>
-    <input class="auth-input" id="signup-password" type="password" placeholder="••••••••" />
-
-    <div class="auth-error" id="signup-error">Preencha todos os campos corretamente.</div>
-
-    <button class="auth-button" id="signup-btn">Criar conta</button>
-
-    <a class="auth-link" id="go-to-login">Já tem conta? Entrar</a>
-  </div>
-</div>
-
-<!-- ============================================================ -->
-<!-- DASHBOARD (principal)                                        -->
-<!-- ============================================================ -->
+<!-- ===== DASHBOARD ===== -->
 <div id="page-dashboard" class="layout hidden">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div>
       <div class="brand">MINOWA</div>
-      <div class="brand-sub">Gestão Automotiva</div>
+      <div class="brand-sub">Revenda</div>
       <nav class="nav">
         <div class="nav-item active" data-page="dashboard">Dashboard</div>
+        <div class="nav-item" data-page="leads">Leads</div>
         <div class="nav-item" data-page="veiculos">Veículos</div>
         <div class="nav-item" data-page="clientes">Clientes</div>
-        <div class="nav-item" data-page="servicos">Serviços</div>
+        <div class="nav-item" data-page="vendas">Vendas</div>
       </nav>
     </div>
     <div class="sidebar-footer">
       <button class="logout-button" id="logout-btn">Sair</button>
     </div>
   </aside>
-
-  <!-- Conteúdo -->
-  <main class="main" id="main-content">
-    <!-- O conteúdo é renderizado via JavaScript -->
-  </main>
+  <main class="main" id="main-content"></main>
 </div>
 
-<!-- ============================================================ -->
-<!-- JAVASCRIPT                                                    -->
-<!-- ============================================================ -->
 <script>
   (function() {
     'use strict';
 
-    // ----- Elementos de navegação entre páginas de autenticação -----
+    // ============================
+    //  AUTENTICAÇÃO
+    // ============================
+    const ADMIN_EMAIL = 'diegoveiculocar@gmail.com';
+    const ADMIN_PASS = 'minowaveiculos';
+
     const pageLogin = document.getElementById('page-login');
-    const pageSignup = document.getElementById('page-signup');
     const pageDashboard = document.getElementById('page-dashboard');
     const mainContent = document.getElementById('main-content');
-
-    const goToSignup = document.getElementById('go-to-signup');
-    const goToLogin = document.getElementById('go-to-login');
+    const loginError = document.getElementById('login-error');
 
     function showLogin() {
       pageLogin.classList.remove('hidden');
-      pageSignup.classList.add('hidden');
-      pageDashboard.classList.add('hidden');
-    }
-    function showSignup() {
-      pageLogin.classList.add('hidden');
-      pageSignup.classList.remove('hidden');
       pageDashboard.classList.add('hidden');
     }
     function showDashboard() {
       pageLogin.classList.add('hidden');
-      pageSignup.classList.add('hidden');
       pageDashboard.classList.remove('hidden');
-      renderDashboard('dashboard'); // página inicial do dashboard
+      renderPage('dashboard');
     }
 
-    goToSignup.addEventListener('click', showSignup);
-    goToLogin.addEventListener('click', showLogin);
-
-    // ----- Login simulado -----
-    const loginBtn = document.getElementById('login-btn');
-    const loginError = document.getElementById('login-error');
-
-    loginBtn.addEventListener('click', function(e) {
+    document.getElementById('login-btn').addEventListener('click', function(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value.trim();
-
-      if (email === '' || password === '') {
-        loginError.style.display = 'block';
-        loginError.textContent = 'Preencha todos os campos.';
-        return;
-      }
-
-      // Simulação: qualquer e-mail/senha com mais de 3 caracteres é aceito
-      if (email.length > 3 && password.length > 3) {
+      const pass = document.getElementById('login-password').value.trim();
+      if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
         loginError.style.display = 'none';
         showDashboard();
       } else {
         loginError.style.display = 'block';
-        loginError.textContent = 'E-mail ou senha inválidos.';
       }
     });
 
-    // ----- Cadastro simulado -----
-    const signupBtn = document.getElementById('signup-btn');
-    const signupError = document.getElementById('signup-error');
+    document.getElementById('logout-btn').addEventListener('click', showLogin);
 
-    signupBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value.trim();
-
-      if (email === '' || password.length < 6) {
-        signupError.style.display = 'block';
-        signupError.textContent = 'E-mail válido e senha com no mínimo 6 caracteres.';
-        return;
-      }
-
-      signupError.style.display = 'none';
-      // Após cadastro, vai para o login
-      showLogin();
-      // Opcional: preencher e-mail no login
-      document.getElementById('login-email').value = email;
-      document.getElementById('login-password').value = '';
-    });
-
-    // ----- Logout -----
-    document.getElementById('logout-btn').addEventListener('click', function() {
-      showLogin();
-      // Limpa campos de login
-      document.getElementById('login-email').value = '';
-      document.getElementById('login-password').value = '';
-      loginError.style.display = 'none';
-    });
-
-    // ----- Navegação da sidebar -----
+    // ============================
+    //  NAVEGAÇÃO
+    // ============================
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
       item.addEventListener('click', function() {
         navItems.forEach(n => n.classList.remove('active'));
         this.classList.add('active');
-        const page = this.dataset.page;
-        renderDashboard(page);
+        renderPage(this.dataset.page);
       });
     });
 
-    // ----- Renderização do conteúdo do dashboard -----
-    function renderDashboard(page) {
-      let html = '';
-
-      if (page === 'dashboard') {
-        html = `
-          <h1 class="page-title">Dashboard</h1>
-          <p class="page-subtitle">Visão geral da sua operação</p>
-
-          <div class="cards-row">
-            <div class="card">
-              <div class="card-label">Veículos em estoque</div>
-              <div class="card-value">47</div>
-              <div class="card-hint">+5 este mês</div>
-            </div>
-            <div class="card">
-              <div class="card-label">Clientes ativos</div>
-              <div class="card-value">128</div>
-              <div class="card-hint">+12 esta semana</div>
-            </div>
-            <div class="card">
-              <div class="card-label">Serviços realizados</div>
-              <div class="card-value">312</div>
-              <div class="card-hint">+23 em julho</div>
-            </div>
-          </div>
-
-          <h2 style="font-size:18px; font-weight:600; margin: 24px 0 8px;">Últimas movimentações</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Veículo</th><th>Cliente</th><th>Status</th><th>Data</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Fiat Toro 2022</td><td>Carlos Silva</td><td><span class="badge">Concluído</span></td><td>20/07/2026</td></tr>
-                <tr><td>VW Golf GTI</td><td>Mariana Lima</td><td><span class="badge">Em andamento</span></td><td>19/07/2026</td></tr>
-                <tr><td>Chevrolet Onix</td><td>Rafael Souza</td><td><span class="badge">Aguardando</span></td><td>18/07/2026</td></tr>
-              </tbody>
-            </table>
-          </div>
-        `;
-      } else if (page === 'veiculos') {
-        html = `
-          <div class="page-header-row">
-            <div><h1 class="page-title">Veículos</h1><p class="page-subtitle">Gerencie sua frota</p></div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Modelo</th><th>Ano</th><th>Placa</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Fiat Toro</td><td>2022</td><td>ABC-1234</td><td><span class="badge">Disponível</span></td></tr>
-                <tr><td>VW Golf</td><td>2023</td><td>DEF-5678</td><td><span class="badge">Vendido</span></td></tr>
-                <tr><td>Chevrolet Onix</td><td>2021</td><td>GHI-9012</td><td><span class="badge">Em manutenção</span></td></tr>
-                <tr><td>Hyundai HB20</td><td>2024</td><td>JKL-3456</td><td><span class="badge">Disponível</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        `;
-      } else if (page === 'clientes') {
-        html = `
-          <div class="page-header-row">
-            <div><h1 class="page-title">Clientes</h1><p class="page-subtitle">Base de clientes</p></div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Veículos</th></tr></thead>
-              <tbody>
-                <tr><td>Carlos Silva</td><td>carlos@email.com</td><td>(11) 99999-1111</td><td>2</td></tr>
-                <tr><td>Mariana Lima</td><td>mariana@email.com</td><td>(11) 99999-2222</td><td>1</td></tr>
-                <tr><td>Rafael Souza</td><td>rafael@email.com</td><td>(11) 99999-3333</td><td>3</td></tr>
-                <tr><td>Ana Paula</td><td>ana@email.com</td><td>(11) 99999-4444</td><td>1</td></tr>
-              </tbody>
-            </table>
-          </div>
-        `;
-      } else if (page === 'servicos') {
-        html = `
-          <div class="page-header-row">
-            <div><h1 class="page-title">Serviços</h1><p class="page-subtitle">Histórico de serviços</p></div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Serviço</th><th>Veículo</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td>Troca de óleo</td><td>Fiat Toro</td><td>Carlos Silva</td><td>R$ 250,00</td><td><span class="badge">Concluído</span></td></tr>
-                <tr><td>Alinhamento</td><td>VW Golf</td><td>Mariana Lima</td><td>R$ 180,00</td><td><span class="badge">Em andamento</span></td></tr>
-                <tr><td>Revisão completa</td><td>Chevrolet Onix</td><td>Rafael Souza</td><td>R$ 750,00</td><td><span class="badge">Aguardando</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        `;
-      }
-
-      mainContent.innerHTML = html;
+    // ============================
+    //  DADOS (localStorage)
+    // ============================
+    function getData(key) {
+      return JSON.parse(localStorage.getItem(key)) || [];
+    }
+    function setData(key, data) {
+      localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // ----- Inicialização: exibe login -----
-    showLogin();
+    // Inicializa com dados de exemplo se vazio
+    function initData() {
+      if (!localStorage.getItem('veiculos')) {
+        setData('veiculos', [
+          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', preco: '115000', descricao: 'Único dono, 30.000 km', imagem: '', status: 'disponivel' },
+          { id: 2, marca: 'VW', modelo: 'Golf', ano: '2021', preco: '98000', descricao: 'Completo, automático', imagem: '', status: 'disponivel' }
+        ]);
+      }
+      if (!localStorage.getItem('clientes')) {
+        setData('clientes', [
+          { id: 1, nome: 'Carlos Silva', telefone: '(11) 99999-1111', email: 'carlos@email.com', endereco: 'Rua A, 123' },
+          { id: 2, nome: 'Mariana Lima', telefone: '(11) 99999-2222', email: 'mariana@email.com', endereco: 'Av B, 456' }
+        ]);
+      }
+      if (!localStorage.getItem('leads')) {
+        setData('leads', [
+          { id: 1, nome: 'João Souza', telefone: '(11) 98888-7777', origem: 'OLX', status: 'novo' },
+          { id: 2, nome: 'Ana Costa', telefone: '(11) 97777-6666', origem: 'Instagram', status: 'contatado' }
+        ]);
+      }
+      if (!localStorage.getItem('vendas')) {
+        setData('vendas', [
+          { id: 1, veiculoId: 1, clienteId: 1, data: '2026-07-20', valor: '115000' }
+        ]);
+        // Atualiza status do veículo vendido
+        let veiculos = getData('veiculos');
+        veiculos = veiculos.map(v => v.id === 1 ? { ...v, status: 'vendido' } : v);
+        setData('veiculos', veiculos);
+      }
+    }
+    initData();
 
-    // Para teste rápido, descomente a linha abaixo se quiser ir direto ao dashboard:
-    // showDashboard();
+    // ============================
+    //  RENDERIZAÇÃO DAS PÁGINAS
+    // ============================
+    function renderPage(page) {
+      let html = '';
+      switch (page) {
+        case 'dashboard': html = renderDashboard(); break;
+        case 'leads': html = renderLeads(); break;
+        case 'veiculos': html = renderVeiculos(); break;
+        case 'clientes': html = renderClientes(); break;
+        case 'vendas': html = renderVendas(); break;
+        default: html = '<p>Página não encontrada.</p>';
+      }
+      mainContent.innerHTML = html;
+      // Reatach event listeners dos botões dinâmicos
+      attachEvents(page);
+    }
 
-    // ----- (Opcional) Enter para login -----
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !pageLogin.classList.contains('hidden')) {
-        loginBtn.click();
+    // ============================
+    //  DASHBOARD
+    // ============================
+    function renderDashboard() {
+      const veiculos = getData('veiculos');
+      const clientes = getData('clientes');
+      const leads = getData('leads');
+      const vendas = getData('vendas');
+      const disponiveis = veiculos.filter(v => v.status === 'disponivel').length;
+
+      return `
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Visão geral da revenda</p>
+        <div class="cards-row">
+          <div class="card"><div class="card-label">Veículos disponíveis</div><div class="card-value">${disponiveis}</div></div>
+          <div class="card"><div class="card-label">Clientes cadastrados</div><div class="card-value">${clientes.length}</div></div>
+          <div class="card"><div class="card-label">Vendas realizadas</div><div class="card-value">${vendas.length}</div></div>
+          <div class="card"><div class="card-label">Leads ativos</div><div class="card-value">${leads.length}</div></div>
+        </div>
+        <h2 style="font-size:18px; margin-top: 20px;">Últimas vendas</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Veículo</th><th>Cliente</th><th>Data</th><th>Valor</th></tr></thead>
+            <tbody>
+              ${vendas.slice(-3).reverse().map(v => {
+                const veic = veiculos.find(x => x.id === v.veiculoId);
+                const cli = clientes.find(x => x.id === v.clienteId);
+                return `<tr><td>${veic ? veic.marca+' '+veic.modelo : 'N/A'}</td><td>${cli ? cli.nome : 'N/A'}</td><td>${v.data}</td><td>R$ ${v.valor}</td></tr>`;
+              }).join('') || '<tr><td colspan="4">Nenhuma venda registrada.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ============================
+    //  LEADS
+    // ============================
+    function renderLeads() {
+      const leads = getData('leads');
+      const statusOptions = ['novo', 'contatado', 'negociação', 'perdido', 'convertido'];
+      let html = `
+        <div class="page-header-row">
+          <div><h1 class="page-title">Leads</h1><p class="page-subtitle">Potenciais clientes</p></div>
+          <button class="btn-primary" onclick="abrirFormLead()">+ Novo Lead</button>
+        </div>
+        <div id="form-lead" class="form-grid hidden">
+          <div><label>Nome</label><input id="lead-nome" placeholder="Nome completo" /></div>
+          <div><label>Telefone</label><input id="lead-telefone" placeholder="(00) 00000-0000" /></div>
+          <div><label>Origem</label>
+            <select id="lead-origem"><option>OLX</option><option>Facebook</option><option>Instagram</option><option>WhatsApp</option><option>Outro</option></select>
+          </div>
+          <div><label>Status</label>
+            <select id="lead-status">${statusOptions.map(s => `<option>${s}</option>`).join('')}</select>
+          </div>
+          <div class="form-actions">
+            <button class="btn-secondary" onclick="cancelarFormLead()">Cancelar</button>
+            <button class="btn-primary" id="salvar-lead">Salvar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>Telefone</th><th>Origem</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody>
+              ${leads.map(l => `
+                <tr>
+                  <td>${l.nome}</td>
+                  <td>${l.telefone}</td>
+                  <td>${l.origem}</td>
+                  <td><span class="badge">${l.status}</span></td>
+                  <td>
+                    <button class="btn-secondary" onclick="editarLead(${l.id})">✎</button>
+                    <button class="btn-secondary" onclick="excluirLead(${l.id})">✕</button>
+                  </td>
+                </tr>
+              `).join('') || '<tr><td colspan="5">Nenhum lead cadastrado.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // ============================
+    //  VEÍCULOS
+    // ============================
+    function renderVeiculos() {
+      const veiculos = getData('veiculos');
+      let html = `
+        <div class="page-header-row">
+          <div><h1 class="page-title">Veículos</h1><p class="page-subtitle">Estoque</p></div>
+          <button class="btn-primary" onclick="abrirFormVeiculo()">+ Novo Veículo</button>
+        </div>
+        <div id="form-veiculo" class="form-grid hidden">
+          <div><label>Marca</label><input id="veic-marca" placeholder="Ex: Fiat" /></div>
+          <div><label>Modelo</label><input id="veic-modelo" placeholder="Ex: Toro" /></div>
+          <div><label>Ano</label><input id="veic-ano" placeholder="2022" /></div>
+          <div><label>Preço (R$)</label><input id="veic-preco" placeholder="115000" /></div>
+          <div class="full-width"><label>Descrição</label><textarea id="veic-desc" rows="2"></textarea></div>
+          <div class="full-width"><label>Foto do veículo</label><input type="file" id="veic-imagem" accept="image/*" /></div>
+          <div class="full-width" style="display:flex; gap:12px; align-items:center;">
+            <img id="veic-preview" class="img-preview" style="display:none;" />
+            <span id="veic-nome-arquivo" style="color:var(--text-secondary);font-size:13px;"></span>
+          </div>
+          <div class="form-actions">
+            <button class="btn-secondary" onclick="cancelarFormVeiculo()">Cancelar</button>
+            <button class="btn-primary" id="salvar-veiculo">Salvar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Foto</th><th>Veículo</th><th>Ano</th><th>Preço</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody>
+              ${veiculos.map(v => `
+                <tr>
+                  <td>${v.imagem ? `<img src="${v.imagem}" class="img-preview" />` : '—'}</td>
+                  <td>${v.marca} ${v.modelo}</td>
+                  <td>${v.ano}</td>
+                  <td>R$ ${v.preco}</td>
+                  <td><span class="badge ${v.status === 'disponivel' ? 'badge-success' : ''}">${v.status}</span></td>
+                  <td>
+                    <button class="btn-secondary" onclick="editarVeiculo(${v.id})">✎</button>
+                    <button class="btn-secondary" onclick="excluirVeiculo(${v.id})">✕</button>
+                    ${v.status === 'disponivel' ? `<button class="btn-whatsapp" onclick="enviarWhatsApp(${v.id})">📱 WhatsApp</button>` : ''}
+                  </td>
+                </tr>
+              `).join('') || '<tr><td colspan="6">Nenhum veículo cadastrado.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // ============================
+    //  CLIENTES
+    // ============================
+    function renderClientes() {
+      const clientes = getData('clientes');
+      let html = `
+        <div class="page-header-row">
+          <div><h1 class="page-title">Clientes</h1><p class="page-subtitle">Base de clientes</p></div>
+          <button class="btn-primary" onclick="abrirFormCliente()">+ Novo Cliente</button>
+        </div>
+        <div id="form-cliente" class="form-grid hidden">
+          <div><label>Nome</label><input id="cli-nome" placeholder="Nome completo" /></div>
+          <div><label>Telefone</label><input id="cli-telefone" placeholder="(00) 00000-0000" /></div>
+          <div><label>E-mail</label><input id="cli-email" placeholder="email@exemplo.com" /></div>
+          <div><label>Endereço</label><input id="cli-endereco" placeholder="Rua, nº" /></div>
+          <div class="form-actions">
+            <button class="btn-secondary" onclick="cancelarFormCliente()">Cancelar</button>
+            <button class="btn-primary" id="salvar-cliente">Salvar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Endereço</th><th>Ações</th></tr></thead>
+            <tbody>
+              ${clientes.map(c => `
+                <tr>
+                  <td>${c.nome}</td>
+                  <td>${c.telefone}</td>
+                  <td>${c.email}</td>
+                  <td>${c.endereco}</td>
+                  <td>
+                    <button class="btn-secondary" onclick="editarCliente(${c.id})">✎</button>
+                    <button class="btn-secondary" onclick="excluirCliente(${c.id})">✕</button>
+                  </td>
+                </tr>
+              `).join('') || '<tr><td colspan="5">Nenhum cliente cadastrado.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // ============================
+    //  VENDAS
+    // ============================
+    function renderVendas() {
+      const veiculos = getData('veiculos');
+      const clientes = getData('clientes');
+      const vendas = getData('vendas');
+      const disponiveis = veiculos.filter(v => v.status === 'disponivel');
+
+      let html = `
+        <div class="page-header-row">
+          <div><h1 class="page-title">Vendas</h1><p class="page-subtitle">Registrar nova venda</p></div>
+          <button class="btn-primary" onclick="abrirFormVenda()">+ Nova Venda</button>
+        </div>
+        <div id="form-venda" class="form-grid hidden">
+          <div><label>Veículo</label>
+            <select id="venda-veiculo">
+              ${disponiveis.map(v => `<option value="${v.id}">${v.marca} ${v.modelo} (R$ ${v.preco})</option>`).join('')}
+              ${disponiveis.length === 0 ? '<option value="">Nenhum veículo disponível</option>' : ''}
+            </select>
+          </div>
+          <div><label>Cliente</label>
+            <select id="venda-cliente">
+              ${clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('')}
+              ${clientes.length === 0 ? '<option value="">Nenhum cliente cadastrado</option>' : ''}
+            </select>
+          </div>
+          <div><label>Data</label><input type="date" id="venda-data" /></div>
+          <div><label>Valor (R$)</label><input id="venda-valor" placeholder="115000" /></div>
+          <div class="form-actions">
+            <button class="btn-secondary" onclick="cancelarFormVenda()">Cancelar</button>
+            <button class="btn-primary" id="salvar-venda">Registrar Venda</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Veículo</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Ações</th></tr></thead>
+            <tbody>
+              ${vendas.map(v => {
+                const veic = veiculos.find(x => x.id === v.veiculoId);
+                const cli = clientes.find(x => x.id === v.clienteId);
+                return `<tr>
+                  <td>${veic ? veic.marca+' '+veic.modelo : 'N/A'}</td>
+                  <td>${cli ? cli.nome : 'N/A'}</td>
+                  <td>${v.data}</td>
+                  <td>R$ ${v.valor}</td>
+                  <td><button class="btn-secondary" onclick="excluirVenda(${v.id})">✕</button></td>
+                </tr>`;
+              }).join('') || '<tr><td colspan="5">Nenhuma venda registrada.</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+      `;
+      return html;
+    }
+
+    // ============================
+    //  EVENTOS E FUNÇÕES GLOBAIS
+    // ============================
+
+    // ---- LEADS ----
+    let editLeadId = null;
+    window.abrirFormLead = function(id) {
+      const form = document.getElementById('form-lead');
+      form.classList.remove('hidden');
+      if (id) {
+        const leads = getData('leads');
+        const lead = leads.find(l => l.id === id);
+        if (lead) {
+          document.getElementById('lead-nome').value = lead.nome;
+          document.getElementById('lead-telefone').value = lead.telefone;
+          document.getElementById('lead-origem').value = lead.origem;
+          document.getElementById('lead-status').value = lead.status;
+          editLeadId = id;
+        }
+      } else {
+        document.getElementById('lead-nome').value = '';
+        document.getElementById('lead-telefone').value = '';
+        document.getElementById('lead-origem').value = 'OLX';
+        document.getElementById('lead-status').value = 'novo';
+        editLeadId = null;
+      }
+    };
+    window.cancelarFormLead = function() {
+      document.getElementById('form-lead').classList.add('hidden');
+      editLeadId = null;
+    };
+    window.excluirLead = function(id) {
+      if (confirm('Remover este lead?')) {
+        let leads = getData('leads');
+        leads = leads.filter(l => l.id !== id);
+        setData('leads', leads);
+        renderPage('leads');
+      }
+    };
+    window.editarLead = function(id) {
+      abrirFormLead(id);
+    };
+
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'salvar-lead') {
+        const nome = document.getElementById('lead-nome').value.trim();
+        const telefone = document.getElementById('lead-telefone').value.trim();
+        const origem = document.getElementById('lead-origem').value;
+        const status = document.getElementById('lead-status').value;
+        if (!nome || !telefone) return alert('Preencha nome e telefone.');
+        let leads = getData('leads');
+        if (editLeadId) {
+          leads = leads.map(l => l.id === editLeadId ? { ...l, nome, telefone, origem, status } : l);
+        } else {
+          const newId = leads.length ? Math.max(...leads.map(l => l.id)) + 1 : 1;
+          leads.push({ id: newId, nome, telefone, origem, status });
+        }
+        setData('leads', leads);
+        cancelarFormLead();
+        renderPage('leads');
       }
     });
 
+    // ---- VEÍCULOS ----
+    let editVeiculoId = null;
+    window.abrirFormVeiculo = function(id) {
+      const form = document.getElementById('form-veiculo');
+      form.classList.remove('hidden');
+      document.getElementById('veic-preview').style.display = 'none';
+      document.getElementById('veic-nome-arquivo').textContent = '';
+      if (id) {
+        const veiculos = getData('veiculos');
+        const v = veiculos.find(x => x.id === id);
+        if (v) {
+          document.getElementById('veic-marca').value = v.marca;
+          document.getElementById('veic-modelo').value = v.modelo;
+          document.getElementById('veic-ano').value = v.ano;
+          document.getElementById('veic-preco').value = v.preco;
+          document.getElementById('veic-desc').value = v.descricao || '';
+          if (v.imagem) {
+            document.getElementById('veic-preview').src = v.imagem;
+            document.getElementById('veic-preview').style.display = 'block';
+          }
+          editVeiculoId = id;
+        }
+      } else {
+        document.getElementById('veic-marca').value = '';
+        document.getElementById('veic-modelo').value = '';
+        document.getElementById('veic-ano').value = '';
+        document.getElementById('veic-preco').value = '';
+        document.getElementById('veic-desc').value = '';
+        document.getElementById('veic-imagem').value = '';
+        document.getElementById('veic-preview').style.display = 'none';
+        editVeiculoId = null;
+      }
+    };
+    window.cancelarFormVeiculo = function() {
+      document.getElementById('form-veiculo').classList.add('hidden');
+      editVeiculoId = null;
+    };
+    window.excluirVeiculo = function(id) {
+      if (confirm('Excluir este veículo?')) {
+        let veiculos = getData('veiculos');
+        veiculos = veiculos.filter(v => v.id !== id);
+        setData('veiculos', veiculos);
+        renderPage('veiculos');
+      }
+    };
+    window.editarVeiculo = function(id) {
+      abrirFormVeiculo(id);
+    };
+
+    // Enviar WhatsApp
+    window.enviarWhatsApp = function(id) {
+      const veiculos = getData('veiculos');
+      const v = veiculos.find(x => x.id === id);
+      if (!v) return;
+      const msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nPreço: R$ ${v.preco}\nDescrição: ${v.descricao || '—'}\n\nEntre em contato para mais informações.`;
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    };
+
+    // Upload de imagem
+    document.addEventListener('change', function(e) {
+      if (e.target && e.target.id === 'veic-imagem') {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            document.getElementById('veic-preview').src = ev.target.result;
+            document.getElementById('veic-preview').style.display = 'block';
+            document.getElementById('veic-nome-arquivo').textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'salvar-veiculo') {
+        const marca = document.getElementById('veic-marca').value.trim();
+        const modelo = document.getElementById('veic-modelo').value.trim();
+        const ano = document.getElementById('veic-ano').value.trim();
+        const preco = document.getElementById('veic-preco').value.trim();
+        const desc = document.getElementById('veic-desc').value.trim();
+        const imagem = document.getElementById('veic-preview').src || '';
+        if (!marca || !modelo || !ano || !preco) return alert('Preencha todos os campos obrigatórios.');
+        let veiculos = getData('veiculos');
+        if (editVeiculoId) {
+          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, preco, descricao: desc, imagem } : v);
+        } else {
+          const newId = veiculos.length ? Math.max(...veiculos.map(v => v.id)) + 1 : 1;
+          veiculos.push({ id: newId, marca, modelo, ano, preco, descricao: desc, imagem, status: 'disponivel' });
+        }
+        setData('veiculos', veiculos);
+        cancelarFormVeiculo();
+        renderPage('veiculos');
+      }
+    });
+
+    // ---- CLIENTES ----
+    let editClienteId = null;
+    window.abrirFormCliente = function(id) {
+      const form = document.getElementById('form-cliente');
+      form.classList.remove('hidden');
+      if (id) {
+        const clientes = getData('clientes');
+        const c = clientes.find(x => x.id === id);
+        if (c) {
+          document.getElementById('cli-nome').value = c.nome;
+          document.getElementById('cli-telefone').value = c.telefone;
+          document.getElementById('cli-email').value = c.email;
+          document.getElementById('cli-endereco').value = c.endereco;
+          editClienteId = id;
+        }
+      } else {
+        document.getElementById('cli-nome').value = '';
+        document.getElementById('cli-telefone').value = '';
+        document.getElementById('cli-email').value = '';
+        document.getElementById('cli-endereco').value = '';
+        editClienteId = null;
+      }
+    };
+    window.cancelarFormCliente = function() {
+      document.getElementById('form-cliente').classList.add('hidden');
+      editClienteId = null;
+    };
+    window.excluirCliente = function(id) {
+      if (confirm('Remover este cliente?')) {
+        let clientes = getData('clientes');
+        clientes = clientes.filter(c => c.id !== id);
+        setData('clientes', clientes);
+        renderPage('clientes');
+      }
+    };
+    window.editarCliente = function(id) {
+      abrirFormCliente(id);
+    };
+
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'salvar-cliente') {
+        const nome = document.getElementById('cli-nome').value.trim();
+        const telefone = document.getElementById('cli-telefone').value.trim();
+        const email = document.getElementById('cli-email').value.trim();
+        const endereco = document.getElementById('cli-endereco').value.trim();
+        if (!nome || !telefone) return alert('Preencha nome e telefone.');
+        let clientes = getData('clientes');
+        if (editClienteId) {
+          clientes = clientes.map(c => c.id === editClienteId ? { ...c, nome, telefone, email, endereco } : c);
+        } else {
+          const newId = clientes.length ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
+          clientes.push({ id: newId, nome, telefone, email, endereco });
+        }
+        setData('clientes', clientes);
+        cancelarFormCliente();
+        renderPage('clientes');
+      }
+    });
+
+    // ---- VENDAS ----
+    window.abrirFormVenda = function() {
+      document.getElementById('form-venda').classList.remove('hidden');
+      document.getElementById('venda-data').value = new Date().toISOString().slice(0,10);
+      document.getElementById('venda-valor').value = '';
+    };
+    window.cancelarFormVenda = function() {
+      document.getElementById('form-venda').classList.add('hidden');
+    };
+    window.excluirVenda = function(id) {
+      if (confirm('Excluir esta venda? O veículo voltará ao estoque.')) {
+        let vendas = getData('vendas');
+        const venda = vendas.find(v => v.id === id);
+        if (venda) {
+          // Reverte status do veículo
+          let veiculos = getData('veiculos');
+          veiculos = veiculos.map(v => v.id === venda.veiculoId ? { ...v, status: 'disponivel' } : v);
+          setData('veiculos', veiculos);
+        }
+        vendas = vendas.filter(v => v.id !== id);
+        setData('vendas', vendas);
+        renderPage('vendas');
+      }
+    };
+
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'salvar-venda') {
+        const veiculoId = parseInt(document.getElementById('venda-veiculo').value);
+        const clienteId = parseInt(document.getElementById('venda-cliente').value);
+        const data = document.getElementById('venda-data').value;
+        const valor = document.getElementById('venda-valor').value.trim();
+        if (!veiculoId || !clienteId || !data || !valor) return alert('Preencha todos os campos.');
+        // Verifica se veículo ainda está disponível
+        let veiculos = getData('veiculos');
+        const veic = veiculos.find(v => v.id === veiculoId);
+        if (!veic || veic.status !== 'disponivel') return alert('Veículo não está mais disponível.');
+        // Registrar venda
+        let vendas = getData('vendas');
+        const newId = vendas.length ? Math.max(...vendas.map(v => v.id)) + 1 : 1;
+        vendas.push({ id: newId, veiculoId, clienteId, data, valor });
+        setData('vendas', vendas);
+        // Atualiza status do veículo
+        veiculos = veiculos.map(v => v.id === veiculoId ? { ...v, status: 'vendido' } : v);
+        setData('veiculos', veiculos);
+        cancelarFormVenda();
+        renderPage('vendas');
+      }
+    });
+
+    // ============================
+    //  INICIALIZAÇÃO
+    // ============================
+    showLogin();
+    // Se quiser pular login (debug), descomente:
+    // showDashboard();
+
   })();
 </script>
-
 </body>
 </html>
