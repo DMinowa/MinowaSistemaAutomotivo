@@ -272,7 +272,7 @@
       object-fit: cover;
     }
 
-    /* Chatbot */
+    /* Chat / Central de Atendimento */
     .chat-container {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -329,6 +329,29 @@
       cursor: pointer;
     }
     .chat-input-area button:hover { opacity: 0.85; }
+
+    .channel-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .channel-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-secondary);
+      transition: background 0.15s;
+    }
+    .channel-tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .channel-tab:hover { background: rgba(255,255,255,0.05); }
 
     @media (max-width: 900px) { .form-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 700px) {
@@ -424,7 +447,7 @@
         <div class="nav-item" data-page="veiculos">Veículos</div>
         <div class="nav-item" data-page="clientes">Clientes</div>
         <div class="nav-item" data-page="vendas">Vendas</div>
-        <div class="nav-item" data-page="chatbot">Chatbot</div>
+        <div class="nav-item" data-page="atendimento">Atendimento</div>
       </nav>
     </div>
     <div class="sidebar-footer">
@@ -507,7 +530,6 @@
     };
     const CORES = ['Branco','Preto','Prata','Cinza','Vermelho','Azul','Verde','Amarelo','Laranja','Marrom','Bege','Rosa','Roxo','Dourado','Chumbo'];
     const COMBUSTIVEIS = ['Gasolina','Álcool','Flex','Diesel','Elétrico','Híbrido'];
-    const STATUS_VEICULO = ['disponivel','vendido','reservado'];
 
     function initData() {
       if (!localStorage.getItem('veiculos')) {
@@ -536,6 +558,27 @@
         veiculos = veiculos.map(v => v.id === 1 ? { ...v, status:'vendido' } : v);
         setData('veiculos', veiculos);
       }
+      // Inicializa conversas do atendimento
+      if (!localStorage.getItem('conversas')) {
+        setData('conversas', [
+          { id:1, canal:'WhatsApp', cliente:'Maria Oliveira', mensagens: [
+            { de:'cliente', texto:'Olá, vi o Golf vermelho, ainda está disponível?', timestamp: Date.now() - 60000 },
+            { de:'sistema', texto:'Sim, o Golf 2021 está disponível. Posso te enviar mais detalhes.', timestamp: Date.now() - 30000 }
+          ]},
+          { id:2, canal:'Instagram', cliente:'@joaosilva', mensagens: [
+            { de:'cliente', texto:'Boa noite, o Fiat Toro tem câmbio automático?', timestamp: Date.now() - 120000 },
+            { de:'sistema', texto:'Olá! Sim, a Toro 2022 tem câmbio automático de 6 marchas. Quer agendar uma visita?', timestamp: Date.now() - 90000 }
+          ]},
+          { id:3, canal:'OLX', cliente:'José Almeida', mensagens: [
+            { de:'cliente', texto:'Qual o valor do Golf?', timestamp: Date.now() - 180000 },
+            { de:'sistema', texto:'O valor é R$ 98.000,00. Posso passar mais informações se desejar.', timestamp: Date.now() - 150000 }
+          ]},
+          { id:4, canal:'Facebook', cliente:'Carla Santos', mensagens: [
+            { de:'cliente', texto:'Tem carros com preço até R$ 60.000?', timestamp: Date.now() - 240000 },
+            { de:'sistema', texto:'No momento temos um modelo que pode te atender. Vou listar os disponíveis.', timestamp: Date.now() - 210000 }
+          ]}
+        ]);
+      }
     }
     initData();
 
@@ -547,7 +590,7 @@
         case 'veiculos': html = renderVeiculos(); break;
         case 'clientes': html = renderClientes(); break;
         case 'vendas': html = renderVendas(); break;
-        case 'chatbot': html = renderChatbot(); break;
+        case 'atendimento': html = renderAtendimento(); break;
         default: html = '<p>Página não encontrada.</p>';
       }
       mainContent.innerHTML = html;
@@ -586,7 +629,7 @@
       `;
     }
 
-    // ===== LEADS (igual anterior) =====
+    // ===== LEADS =====
     function renderLeads() {
       const leads = getData('leads');
       const statusOptions = ['novo','contatado','negociação','perdido','convertido'];
@@ -632,7 +675,7 @@
       return html;
     }
 
-    // ===== VEÍCULOS =====
+    // ===== VEÍCULOS (com OCR corrigido) =====
     function renderVeiculos() {
       const veiculos = getData('veiculos');
       let html = `
@@ -831,22 +874,29 @@
       return html;
     }
 
-    // ===== CHATBOT =====
-    function renderChatbot() {
-      return `
-        <h1 class="page-title">Chatbot</h1>
-        <p class="page-subtitle">Assistente virtual para clientes (simula conversa via OLX, Instagram, Facebook, WhatsApp)</p>
-        <div class="chat-container" id="chat-messages">
-          <div class="chat-msg bot">Olá! Sou o assistente da Minowa Veículos. Posso ajudar com informações sobre nossos veículos. Pergunte-me algo como "Quais carros disponíveis?" ou "Me fale sobre o Fiat Toro".</div>
+    // ===== ATENDIMENTO (Chatbot integrado com redes sociais) =====
+    function renderAtendimento() {
+      const conversas = getData('conversas');
+      const canais = ['WhatsApp', 'Instagram', 'OLX', 'Facebook'];
+      // Pega a primeira conversa para exibir, ou cria uma seleção
+      let html = `
+        <h1 class="page-title">Central de Atendimento</h1>
+        <p class="page-subtitle">Acompanhe e responda mensagens de WhatsApp, Instagram, OLX e Facebook</p>
+        <div class="channel-tabs" id="channel-tabs">
+          ${canais.map(c => `<div class="channel-tab ${c === 'WhatsApp' ? 'active' : ''}" data-channel="${c}">${c}</div>`).join('')}
+        </div>
+        <div id="chat-container" style="background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; max-height:400px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+          <!-- Mensagens serão carregadas via JS -->
         </div>
         <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Digite sua pergunta..." />
+          <input type="text" id="chat-input" placeholder="Digite sua resposta..." />
           <button id="chat-send">Enviar</button>
         </div>
         <div style="margin-top:12px; font-size:13px; color:var(--text-secondary);">
-          <strong>Nota:</strong> O chatbot não exibe placa, renavam, chassi ou documentos pessoais.
+          <strong>Nota:</strong> As respostas são simuladas. Para integração real, conecte com APIs de cada canal.
         </div>
       `;
+      return html;
     }
 
     // ============================
@@ -909,7 +959,7 @@
     });
 
     // ============================
-    //  CRUD VEÍCULO + OCR
+    //  CRUD VEÍCULO + OCR CORRIGIDO
     // ============================
     let editVeiculoId = null;
     let crvDataURL = '';
@@ -1008,7 +1058,7 @@
 
     window.editarVeiculo = function(id) { abrirFormVeiculo(id); };
 
-    // ----- OCR com OCR.space -----
+    // ----- OCR com OCR.space CORRIGIDO -----
     window.enviarCRVparaOCR = function() {
       const fileInput = document.getElementById('veic-crv');
       const file = fileInput.files[0];
@@ -1019,74 +1069,78 @@
       const statusEl = document.getElementById('ocr-status');
       statusEl.textContent = 'Enviando para OCR...';
 
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const base64Image = ev.target.result.split(',')[1]; // data URL sem header
+      const apiKey = 'K83259599988957'; // Chave de demonstração
+      const url = 'https://api.ocr.space/parse/image';
+      const formData = new FormData();
+      formData.append('apikey', apiKey);
+      formData.append('language', 'por');
+      formData.append('file', file);
 
-        // Usando OCR.space API (chave de demonstração gratuita)
-        const apiKey = 'K83259599988957'; // Substitua pela sua chave se quiser
-        const url = 'https://api.ocr.space/parse/image';
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        statusEl.textContent = 'OCR concluído!';
+        if (data.ErrorMessage) {
+          alert('Erro no OCR: ' + data.ErrorMessage);
+          return;
+        }
+        if (data.ParsedResults && data.ParsedResults.length > 0) {
+          const text = data.ParsedResults[0].ParsedText;
+          // Extração mais robusta
+          const extrairCampo = (padrao) => {
+            const regex = new RegExp(padrao + '\\s*[:]?\\s*([^\\n\\r]+)', 'i');
+            const match = text.match(regex);
+            return match ? match[1].trim() : '';
+          };
+          const marca = extrairCampo('MARCA');
+          const modelo = extrairCampo('MODELO');
+          const ano = extrairCampo('ANO');
+          const cor = extrairCampo('COR');
+          const placa = extrairCampo('PLACA');
+          const renavam = extrairCampo('RENAVAM');
+          const chassi = extrairCampo('CHASSI');
+          const combustivel = extrairCampo('COMBUSTÍVEL');
+          const km = extrairCampo('KM');
 
-        const formData = new FormData();
-        formData.append('apikey', apiKey);
-        formData.append('language', 'por');
-        formData.append('file', file);
-
-        fetch(url, {
-          method: 'POST',
-          body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-          statusEl.textContent = 'OCR concluído!';
-          if (data.ErrorMessage) {
-            alert('Erro no OCR: ' + data.ErrorMessage);
-            return;
+          // Preenche os campos
+          if (marca && MARCAS.includes(marca)) {
+            document.getElementById('veic-marca').value = marca;
+            // Dispara change para carregar modelos
+            const evt = new Event('change');
+            document.getElementById('veic-marca').dispatchEvent(evt);
           }
-          if (data.ParsedResults && data.ParsedResults.length > 0) {
-            const text = data.ParsedResults[0].ParsedText;
-            // Tenta extrair campos comuns
-            const extrair = (regex) => {
-              const match = text.match(regex);
-              return match ? match[1].trim() : '';
-            };
-            const marca = extrair(/MARCA\s*[:]?\s*([^\n]+)/i);
-            const modelo = extrair(/MODELO\s*[:]?\s*([^\n]+)/i);
-            const ano = extrair(/ANO\s*[:]?\s*([^\n]+)/i);
-            const cor = extrair(/COR\s*[:]?\s*([^\n]+)/i);
-            const placa = extrair(/PLACA\s*[:]?\s*([^\n]+)/i);
-            const renavam = extrair(/RENAVAM\s*[:]?\s*([^\n]+)/i);
-            const chassi = extrair(/CHASSI\s*[:]?\s*([^\n]+)/i);
-            const combustivel = extrair(/COMBUSTÍVEL\s*[:]?\s*([^\n]+)/i);
-            const km = extrair(/KM\s*[:]?\s*([^\n]+)/i);
-
-            if (marca) document.getElementById('veic-marca').value = marca;
-            if (modelo) {
-              // Força atualização da lista de modelos
-              const evt = new Event('change');
-              document.getElementById('veic-marca').dispatchEvent(evt);
-              document.getElementById('veic-modelo').value = modelo;
+          if (modelo) {
+            // Tenta selecionar o modelo na lista
+            const modeloSelect = document.getElementById('veic-modelo');
+            const options = modeloSelect.options;
+            for (let i = 0; i < options.length; i++) {
+              if (options[i].text.toLowerCase() === modelo.toLowerCase()) {
+                modeloSelect.selectedIndex = i;
+                break;
+              }
             }
-            if (ano) document.getElementById('veic-ano').value = ano;
-            if (cor && CORES.includes(cor)) document.getElementById('veic-cor').value = cor;
-            if (combustivel) document.getElementById('veic-combustivel').value = combustivel;
-            if (km) document.getElementById('veic-km').value = km;
-            if (placa) document.getElementById('veic-placa').value = placa;
-            if (renavam) document.getElementById('veic-renavam').value = renavam;
-            if (chassi) document.getElementById('veic-chassi').value = chassi;
-
-            alert('Dados do CRV reconhecidos! Verifique os campos.');
-          } else {
-            alert('Nenhum texto reconhecido na imagem.');
           }
-        })
-        .catch(err => {
-          statusEl.textContent = 'Erro no OCR';
-          alert('Falha na comunicação com a API OCR. Verifique sua conexão.');
-          console.error(err);
-        });
-      };
-      reader.readAsDataURL(file);
+          if (ano) document.getElementById('veic-ano').value = ano;
+          if (cor && CORES.includes(cor)) document.getElementById('veic-cor').value = cor;
+          if (combustivel && COMBUSTIVEIS.includes(combustivel)) document.getElementById('veic-combustivel').value = combustivel;
+          if (km) document.getElementById('veic-km').value = km;
+          if (placa) document.getElementById('veic-placa').value = placa.toUpperCase();
+          if (renavam) document.getElementById('veic-renavam').value = renavam;
+          if (chassi) document.getElementById('veic-chassi').value = chassi.toUpperCase();
+
+          alert('Dados do CRV reconhecidos e preenchidos! Verifique os campos.');
+        } else {
+          alert('Nenhum texto reconhecido na imagem. Tente uma imagem mais nítida.');
+        }
+      })
+      .catch(err => {
+        statusEl.textContent = 'Erro no OCR';
+        alert('Falha na comunicação com a API OCR. Verifique sua conexão.');
+        console.error(err);
+      });
     };
 
     // Upload da CRV e foto
@@ -1150,12 +1204,20 @@
       }
     });
 
+    // ===== ENVIO WHATSAPP COM FOTO =====
     window.enviarWhatsApp = function(id) {
       const veiculos = getData('veiculos');
       const v = veiculos.find(x => x.id === id);
       if (!v) return;
-      const msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nCor: ${v.cor}\nKm: ${v.km}\nPreço: R$ ${v.valor}\nDescrição: ${v.descricao || '—'}\n\nEntre em contato para mais informações.`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+      let msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nCor: ${v.cor}\nKm: ${v.km}\nPreço: R$ ${v.valor}\nDescrição: ${v.descricao || '—'}`;
+      // Se tiver foto, inclui um link (não é possível enviar imagem diretamente pelo link do WhatsApp)
+      if (v.foto) {
+        // Converte a imagem base64 para um link (blob) - mas o WhatsApp não aceita anexo via link, apenas se for enviado como arquivo.
+        // A melhor opção é enviar a foto como arquivo, mas via API é complexo. Vamos colocar um aviso.
+        msg += `\n\n📸 Tenho foto deste veículo. Entre em contato para receber.`;
+      }
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
     };
 
     // ============================
@@ -1312,7 +1374,7 @@
     });
 
     // ============================
-    //  GERAR CONTRATO PDF
+    //  GERAR CONTRATO PDF (CORRIGIDO)
     // ============================
     window.gerarContrato = function(vendaId) {
       const vendas = getData('vendas');
@@ -1415,6 +1477,7 @@
       container.style.top = '0';
       container.style.width = '800px';
       container.style.background = 'white';
+      container.style.padding = '20px';
       document.body.appendChild(container);
       container.getBoundingClientRect();
 
@@ -1435,99 +1498,139 @@
     };
 
     // ============================
-    //  CHATBOT LÓGICA
+    //  ATENDIMENTO (Chatbot integrado)
     // ============================
+    let currentChannel = 'WhatsApp';
+    let currentConversaId = null;
+
     function attachEvents(page) {
-      if (page === 'chatbot') {
+      if (page === 'atendimento') {
+        // Abas de canais
+        const tabs = document.querySelectorAll('.channel-tab');
+        tabs.forEach(tab => {
+          tab.addEventListener('click', function() {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            currentChannel = this.dataset.channel;
+            carregarConversas(currentChannel);
+          });
+        });
+
+        // Carregar conversas do primeiro canal
+        carregarConversas('WhatsApp');
+
+        // Envio de mensagem
         const input = document.getElementById('chat-input');
         const sendBtn = document.getElementById('chat-send');
-        const messages = document.getElementById('chat-messages');
 
-        function addMessage(text, isUser) {
-          const div = document.createElement('div');
-          div.className = 'chat-msg ' + (isUser ? 'user' : 'bot');
-          div.textContent = text;
-          messages.appendChild(div);
-          messages.scrollTop = messages.scrollHeight;
-        }
-
-        function processQuestion(question) {
-          const veiculos = getData('veiculos');
-          const lower = question.toLowerCase();
-
-          // Verifica se pergunta por todos os disponíveis
-          if (lower.includes('disponível') || lower.includes('disponiveis') || lower.includes('lista') || lower.includes('quais')) {
-            const disponiveis = veiculos.filter(v => v.status === 'disponivel');
-            if (disponiveis.length === 0) {
-              return 'No momento não temos veículos disponíveis. Mas fique ligado, pois nosso estoque é atualizado com frequência!';
-            }
-            let resp = 'Temos os seguintes veículos disponíveis:\n';
-            disponiveis.forEach(v => {
-              resp += `\n• ${v.marca} ${v.modelo} (${v.ano}) – ${v.cor}, ${v.km} km, R$ ${v.valor}`;
-              if (v.descricao) resp += ` – ${v.descricao}`;
-              if (v.foto) resp += ` (com foto)`;
-            });
-            resp += '\n\nPosso dar mais detalhes de algum específico. Basta perguntar!';
-            return resp;
-          }
-
-          // Tenta encontrar um veículo específico
-          const palavras = lower.split(' ');
-          let encontrado = null;
-          for (let v of veiculos) {
-            const nomeCompleto = (v.marca + ' ' + v.modelo).toLowerCase();
-            if (lower.includes(nomeCompleto) || palavras.some(p => v.modelo.toLowerCase().includes(p) || v.marca.toLowerCase().includes(p))) {
-              encontrado = v;
-              break;
-            }
-          }
-
-          if (encontrado) {
-            if (encontrado.status !== 'disponivel') {
-              return `O ${encontrado.marca} ${encontrado.modelo} já foi vendido ou reservado. Posso te mostrar outros modelos?`;
-            }
-            let resp = `Sobre o ${encontrado.marca} ${encontrado.modelo}:\n`;
-            resp += `• Ano: ${encontrado.ano}\n• Cor: ${encontrado.cor}\n• Combustível: ${encontrado.combustivel}\n• Quilometragem: ${encontrado.km} km\n• Preço: R$ ${encontrado.valor}`;
-            if (encontrado.descricao) resp += `\n• Descrição: ${encontrado.descricao}`;
-            if (encontrado.foto) resp += `\n• Tenho foto deste veículo. Posso enviar se desejar.`;
-            resp += `\n\nGostaria de agendar uma visita ou negociar? Estou aqui para ajudar.`;
-            return resp;
-          }
-
-          // Pergunta sobre preço
-          if (lower.includes('preço') || lower.includes('valor')) {
-            return 'Nossos preços variam de acordo com o modelo e ano do veículo. Posso te enviar uma lista com valores ou você pode perguntar por um modelo específico.';
-          }
-
-          // Pergunta sobre fotos
-          if (lower.includes('foto') || lower.includes('imagem')) {
-            const disponiveis = veiculos.filter(v => v.status === 'disponivel');
-            const comFoto = disponiveis.filter(v => v.foto);
-            if (comFoto.length === 0) return 'Ainda não cadastramos fotos dos veículos, mas em breve teremos!';
-            return `Tenho fotos dos seguintes modelos: ${comFoto.map(v => v.marca+' '+v.modelo).join(', ')}. Diga qual você quer ver.`;
-          }
-
-          // Resposta padrão
-          return 'Entendi sua pergunta. Posso te ajudar com informações sobre veículos disponíveis, detalhes de modelos específicos, preços e fotos. O que você gostaria de saber?';
-        }
-
-        function handleSend() {
+        function enviarResposta() {
           const text = input.value.trim();
           if (!text) return;
-          addMessage(text, true);
+          // Adiciona a mensagem do usuário (vendedor)
+          const conversas = getData('conversas');
+          let conversa = conversas.find(c => c.canal === currentChannel);
+          if (!conversa) {
+            // Se não existe, cria uma nova
+            const newId = conversas.length ? Math.max(...conversas.map(c => c.id)) + 1 : 1;
+            conversa = { id: newId, canal: currentChannel, cliente: 'Cliente', mensagens: [] };
+            conversas.push(conversa);
+          }
+          conversa.mensagens.push({ de: 'vendedor', texto: text, timestamp: Date.now() });
+          setData('conversas', conversas);
           input.value = '';
-          // Simula um pequeno atraso para resposta do bot
+
+          // Simula resposta automática do bot (baseada nos veículos)
           setTimeout(() => {
-            const resposta = processQuestion(text);
-            addMessage(resposta, false);
-          }, 500);
+            const resposta = gerarRespostaAutomatica(text);
+            conversa.mensagens.push({ de: 'sistema', texto: resposta, timestamp: Date.now() });
+            setData('conversas', conversas);
+            carregarConversas(currentChannel);
+          }, 800);
+
+          carregarConversas(currentChannel);
         }
 
-        sendBtn.addEventListener('click', handleSend);
+        sendBtn.addEventListener('click', enviarResposta);
         input.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') handleSend();
+          if (e.key === 'Enter') enviarResposta();
         });
       }
+    }
+
+    function carregarConversas(canal) {
+      const container = document.getElementById('chat-container');
+      const conversas = getData('conversas');
+      let conversa = conversas.find(c => c.canal === canal);
+      if (!conversa) {
+        // Cria uma conversa vazia para o canal
+        const newId = conversas.length ? Math.max(...conversas.map(c => c.id)) + 1 : 1;
+        conversa = { id: newId, canal: canal, cliente: 'Cliente', mensagens: [] };
+        conversas.push(conversa);
+        setData('conversas', conversas);
+        // Adiciona mensagem de boas-vindas
+        const boasVindas = {
+          'WhatsApp': 'Olá! Sou o assistente da Minowa. Como posso ajudar?',
+          'Instagram': 'Oi! Aqui é a Minowa Veículos. Em que posso ajudar?',
+          'OLX': 'Olá! Vi seu interesse. Posso passar mais informações sobre nossos veículos.',
+          'Facebook': 'Olá! Bem-vindo à Minowa. Posso ajudar com alguma dúvida?'
+        };
+        conversa.mensagens.push({ de: 'sistema', texto: boasVindas[canal] || 'Olá! Como posso ajudar?', timestamp: Date.now() });
+        setData('conversas', conversas);
+      }
+
+      // Exibe as mensagens
+      container.innerHTML = conversa.mensagens.map(m => {
+        const classe = m.de === 'vendedor' ? 'user' : 'bot';
+        return `<div class="chat-msg ${classe}">${m.texto}</div>`;
+      }).join('');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function gerarRespostaAutomatica(texto) {
+      const lower = texto.toLowerCase();
+      const veiculos = getData('veiculos');
+      const disponiveis = veiculos.filter(v => v.status === 'disponivel');
+
+      // Verifica se pergunta por veículos disponíveis
+      if (lower.includes('disponível') || lower.includes('disponiveis') || lower.includes('lista') || lower.includes('quais')) {
+        if (disponiveis.length === 0) {
+          return 'No momento não temos veículos disponíveis. Mas fique ligado, pois nosso estoque é atualizado com frequência!';
+        }
+        let resp = 'Temos os seguintes veículos disponíveis:\n';
+        disponiveis.forEach(v => {
+          resp += `\n• ${v.marca} ${v.modelo} (${v.ano}) – ${v.cor}, ${v.km} km, R$ ${v.valor}`;
+          if (v.descricao) resp += ` – ${v.descricao}`;
+        });
+        resp += '\n\nPosso dar mais detalhes de algum específico. Basta perguntar!';
+        return resp;
+      }
+
+      // Busca por um veículo específico
+      let encontrado = null;
+      for (let v of veiculos) {
+        const nomeCompleto = (v.marca + ' ' + v.modelo).toLowerCase();
+        if (lower.includes(nomeCompleto) || lower.split(' ').some(p => v.modelo.toLowerCase().includes(p) || v.marca.toLowerCase().includes(p))) {
+          encontrado = v;
+          break;
+        }
+      }
+
+      if (encontrado) {
+        if (encontrado.status !== 'disponivel') {
+          return `O ${encontrado.marca} ${encontrado.modelo} já foi vendido ou reservado. Posso te mostrar outros modelos?`;
+        }
+        let resp = `Sobre o ${encontrado.marca} ${encontrado.modelo}:\n`;
+        resp += `• Ano: ${encontrado.ano}\n• Cor: ${encontrado.cor}\n• Combustível: ${encontrado.combustivel}\n• Quilometragem: ${encontrado.km} km\n• Preço: R$ ${encontrado.valor}`;
+        if (encontrado.descricao) resp += `\n• Descrição: ${encontrado.descricao}`;
+        resp += `\n\nGostaria de agendar uma visita ou negociar? Estou aqui para ajudar.`;
+        return resp;
+      }
+
+      if (lower.includes('preço') || lower.includes('valor')) {
+        return 'Nossos preços variam de acordo com o modelo e ano do veículo. Posso te enviar uma lista com valores ou você pode perguntar por um modelo específico.';
+      }
+
+      return 'Entendi sua pergunta. Posso te ajudar com informações sobre veículos disponíveis, detalhes de modelos específicos e preços. O que você gostaria de saber?';
     }
 
     // ============================
