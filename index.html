@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minowa Veículos</title>
+  <!-- Biblioteca para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* ===== Variáveis ===== */
     :root {
@@ -169,6 +171,7 @@
     .main {
       flex: 1;
       padding: 32px 40px;
+      overflow-x: auto;
     }
     .page-title {
       font-size: 26px;
@@ -229,6 +232,20 @@
     .btn-whatsapp:hover {
       opacity: 0.8;
     }
+    .btn-pdf {
+      background: #ff6b6b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-pdf:hover {
+      opacity: 0.8;
+    }
 
     /* ===== Cards ===== */
     .cards-row {
@@ -267,6 +284,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
+      min-width: 600px;
     }
     th {
       text-align: left;
@@ -300,7 +318,7 @@
     /* ===== Formulários ===== */
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -331,6 +349,9 @@
     .form-grid .full-width {
       grid-column: 1 / -1;
     }
+    .form-grid .half-width {
+      grid-column: span 2;
+    }
     .form-actions {
       grid-column: 1 / -1;
       display: flex;
@@ -346,6 +367,11 @@
     }
 
     /* ===== Responsivo ===== */
+    @media (max-width: 900px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
     @media (max-width: 700px) {
       .sidebar { width: 180px; padding: 16px 12px; }
       .main { padding: 20px; }
@@ -376,6 +402,49 @@
       .main { padding: 16px; }
       .cards-row { gap: 12px; }
       .card { min-width: 120px; padding: 16px; }
+    }
+
+    /* Estilo para o contrato em PDF */
+    .contrato-pdf {
+      font-family: Arial, sans-serif;
+      background: white;
+      color: black;
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .contrato-pdf h1 {
+      text-align: center;
+      font-size: 22px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+    }
+    .contrato-pdf .dados {
+      margin: 20px 0;
+    }
+    .contrato-pdf .dados table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: auto;
+    }
+    .contrato-pdf .dados td {
+      padding: 6px 10px;
+      border: 1px solid #333;
+    }
+    .contrato-pdf .clausula {
+      margin: 18px 0;
+    }
+    .contrato-pdf .clausula strong {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .contrato-pdf .assinatura {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
     }
   </style>
 </head>
@@ -478,18 +547,46 @@
       localStorage.setItem(key, JSON.stringify(data));
     }
 
-    // Inicializa com dados de exemplo se vazio
+    // Listas pré-definidas
+    const MARCAS = ['Fiat', 'Volkswagen', 'Chevrolet', 'Ford', 'Toyota', 'Honda', 'Hyundai', 'Nissan', 'Renault', 'Peugeot', 'Citroën', 'Jeep', 'Mitsubishi', 'Suzuki', 'Kia', 'BMW', 'Mercedes-Benz', 'Audi', 'Volvo', 'Land Rover'];
+    const MODELOS_BY_MARCA = {
+      'Fiat': ['Uno', 'Palio', 'Strada', 'Toro', 'Argo', 'Cronos', 'Mobi', 'Pulse', 'Fastback'],
+      'Volkswagen': ['Gol', 'Polo', 'Virtus', 'T-Cross', 'Nivus', 'Taos', 'Saveiro', 'Amarok', 'Golf'],
+      'Chevrolet': ['Onix', 'Prisma', 'Cruze', 'Tracker', 'Equinox', 'S10', 'Spin', 'Celta'],
+      'Ford': ['Ka', 'Fiesta', 'Focus', 'EcoSport', 'Ranger', 'Bronco', 'Mustang'],
+      'Toyota': ['Corolla', 'Yaris', 'Hilux', 'SW4', 'Etios', 'Camry', 'RAV4'],
+      'Honda': ['Civic', 'Fit', 'HR-V', 'CR-V', 'City', 'WR-V'],
+      'Hyundai': ['HB20', 'Creta', 'Tucson', 'Santa Fe', 'Azera'],
+      'Nissan': ['Kicks', 'Versa', 'Sentra', 'Frontier', 'Leaf'],
+      'Renault': ['Kwid', 'Sandero', 'Logan', 'Duster', 'Captur', 'Oroch'],
+      'Peugeot': ['208', '2008', '3008', 'Partner'],
+      'Citroën': ['C3', 'Aircross', 'C4 Cactus', 'Jumpy'],
+      'Jeep': ['Renegade', 'Compass', 'Commander', 'Wrangler'],
+      'Mitsubishi': ['Lancer', 'Outlander', 'Pajero', 'Eclipse Cross'],
+      'Suzuki': ['Jimny', 'Vitara', 'Swift'],
+      'Kia': ['Sportage', 'Sorento', 'Cerato', 'Stinger'],
+      'BMW': ['X1', 'X3', 'X5', 'Série 3', 'Série 5'],
+      'Mercedes-Benz': ['Classe A', 'Classe C', 'GLA', 'GLC', 'GLE'],
+      'Audi': ['A3', 'A4', 'Q3', 'Q5', 'Q7'],
+      'Volvo': ['XC40', 'XC60', 'XC90', 'S60'],
+      'Land Rover': ['Evoque', 'Discovery', 'Range Rover']
+    };
+
+    const CORES = ['Branco', 'Preto', 'Prata', 'Cinza', 'Vermelho', 'Azul', 'Verde', 'Amarelo', 'Laranja', 'Marrom', 'Bege', 'Rosa', 'Roxo', 'Dourado', 'Chumbo'];
+    const COMBUSTIVEIS = ['Gasolina', 'Álcool', 'Flex', 'Diesel', 'Elétrico', 'Híbrido'];
+
+    // Inicializa dados de exemplo
     function initData() {
       if (!localStorage.getItem('veiculos')) {
         setData('veiculos', [
-          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', preco: '115000', descricao: 'Único dono, 30.000 km', imagem: '', status: 'disponivel' },
-          { id: 2, marca: 'VW', modelo: 'Golf', ano: '2021', preco: '98000', descricao: 'Completo, automático', imagem: '', status: 'disponivel' }
+          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', cor: 'Prata', combustivel: 'Flex', km: 30000, placa: 'ABC-1234', renavam: '12345678901', chassi: '9BD12345678901234', valor: '115000', descricao: 'Único dono, revisões em dia', crv: '', status: 'disponivel' },
+          { id: 2, marca: 'Volkswagen', modelo: 'Golf', ano: '2021', cor: 'Vermelho', combustivel: 'Gasolina', km: 45000, placa: 'DEF-5678', renavam: '98765432109', chassi: '9BD98765432109876', valor: '98000', descricao: 'Completo, automático', crv: '', status: 'disponivel' }
         ]);
       }
       if (!localStorage.getItem('clientes')) {
         setData('clientes', [
-          { id: 1, nome: 'Carlos Silva', telefone: '(11) 99999-1111', email: 'carlos@email.com', endereco: 'Rua A, 123' },
-          { id: 2, nome: 'Mariana Lima', telefone: '(11) 99999-2222', email: 'mariana@email.com', endereco: 'Av B, 456' }
+          { id: 1, nome: 'Carlos Silva', telefone: '(11) 99999-1111', email: 'carlos@email.com', dataNasc: '1985-05-10', profissao: 'Engenheiro', endereco: 'Rua A, 123', bairro: 'Centro', cidade: 'São Paulo', cep: '01000-000', uf: 'SP', habilitado: true },
+          { id: 2, nome: 'Mariana Lima', telefone: '(11) 99999-2222', email: 'mariana@email.com', dataNasc: '1990-08-22', profissao: 'Arquiteta', endereco: 'Av B, 456', bairro: 'Jardim', cidade: 'São Paulo', cep: '02000-000', uf: 'SP', habilitado: false }
         ]);
       }
       if (!localStorage.getItem('leads')) {
@@ -502,7 +599,6 @@
         setData('vendas', [
           { id: 1, veiculoId: 1, clienteId: 1, data: '2026-07-20', valor: '115000' }
         ]);
-        // Atualiza status do veículo vendido
         let veiculos = getData('veiculos');
         veiculos = veiculos.map(v => v.id === 1 ? { ...v, status: 'vendido' } : v);
         setData('veiculos', veiculos);
@@ -524,7 +620,7 @@
         default: html = '<p>Página não encontrada.</p>';
       }
       mainContent.innerHTML = html;
-      // Reatach event listeners dos botões dinâmicos
+      // Reatach event listeners específicos
       attachEvents(page);
     }
 
@@ -618,19 +714,37 @@
       const veiculos = getData('veiculos');
       let html = `
         <div class="page-header-row">
-          <div><h1 class="page-title">Veículos</h1><p class="page-subtitle">Estoque</p></div>
+          <div><h1 class="page-title">Veículos</h1><p class="page-subtitle">Estoque completo</p></div>
           <button class="btn-primary" onclick="abrirFormVeiculo()">+ Novo Veículo</button>
         </div>
         <div id="form-veiculo" class="form-grid hidden">
-          <div><label>Marca</label><input id="veic-marca" placeholder="Ex: Fiat" /></div>
-          <div><label>Modelo</label><input id="veic-modelo" placeholder="Ex: Toro" /></div>
+          <div><label>Marca</label>
+            <select id="veic-marca"><option value="">Selecione</option>${MARCAS.map(m => `<option>${m}</option>`).join('')}</select>
+          </div>
+          <div><label>Modelo</label>
+            <select id="veic-modelo"><option value="">Selecione a marca primeiro</option></select>
+          </div>
           <div><label>Ano</label><input id="veic-ano" placeholder="2022" /></div>
-          <div><label>Preço (R$)</label><input id="veic-preco" placeholder="115000" /></div>
+          <div><label>Cor</label>
+            <select id="veic-cor"><option value="">Selecione</option>${CORES.map(c => `<option>${c}</option>`).join('')}</select>
+          </div>
+          <div><label>Combustível</label>
+            <select id="veic-combustivel"><option value="">Selecione</option>${COMBUSTIVEIS.map(c => `<option>${c}</option>`).join('')}</select>
+          </div>
+          <div><label>Km</label><input id="veic-km" placeholder="0" /></div>
+          <div><label>Placa</label><input id="veic-placa" placeholder="ABC-1234" /></div>
+          <div><label>Renavam</label><input id="veic-renavam" placeholder="12345678901" /></div>
+          <div><label>Chassi</label><input id="veic-chassi" placeholder="9BD12345678901234" /></div>
+          <div><label>Valor (R$)</label><input id="veic-valor" placeholder="115000" /></div>
           <div class="full-width"><label>Descrição</label><textarea id="veic-desc" rows="2"></textarea></div>
-          <div class="full-width"><label>Foto do veículo</label><input type="file" id="veic-imagem" accept="image/*" /></div>
-          <div class="full-width" style="display:flex; gap:12px; align-items:center;">
-            <img id="veic-preview" class="img-preview" style="display:none;" />
-            <span id="veic-nome-arquivo" style="color:var(--text-secondary);font-size:13px;"></span>
+          <div class="full-width">
+            <label>CRV (Foto ou PDF)</label>
+            <input type="file" id="veic-crv" accept="image/*,.pdf" />
+            <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
+              <img id="veic-preview" class="img-preview" style="display:none;" />
+              <span id="veic-nome-arquivo" style="color:var(--text-secondary);font-size:13px;"></span>
+              <button class="btn-secondary" onclick="simularOCR()">🔍 Reconhecer dados</button>
+            </div>
           </div>
           <div class="form-actions">
             <button class="btn-secondary" onclick="cancelarFormVeiculo()">Cancelar</button>
@@ -639,14 +753,16 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Foto</th><th>Veículo</th><th>Ano</th><th>Preço</th><th>Status</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Veículo</th><th>Ano</th><th>Cor</th><th>Km</th><th>Placa</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody>
               ${veiculos.map(v => `
                 <tr>
-                  <td>${v.imagem ? `<img src="${v.imagem}" class="img-preview" />` : '—'}</td>
                   <td>${v.marca} ${v.modelo}</td>
                   <td>${v.ano}</td>
-                  <td>R$ ${v.preco}</td>
+                  <td>${v.cor}</td>
+                  <td>${v.km}</td>
+                  <td>${v.placa}</td>
+                  <td>R$ ${v.valor}</td>
                   <td><span class="badge ${v.status === 'disponivel' ? 'badge-success' : ''}">${v.status}</span></td>
                   <td>
                     <button class="btn-secondary" onclick="editarVeiculo(${v.id})">✎</button>
@@ -654,7 +770,7 @@
                     ${v.status === 'disponivel' ? `<button class="btn-whatsapp" onclick="enviarWhatsApp(${v.id})">📱 WhatsApp</button>` : ''}
                   </td>
                 </tr>
-              `).join('') || '<tr><td colspan="6">Nenhum veículo cadastrado.</td></tr>'}
+              `).join('') || '<tr><td colspan="8">Nenhum veículo cadastrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -676,7 +792,17 @@
           <div><label>Nome</label><input id="cli-nome" placeholder="Nome completo" /></div>
           <div><label>Telefone</label><input id="cli-telefone" placeholder="(00) 00000-0000" /></div>
           <div><label>E-mail</label><input id="cli-email" placeholder="email@exemplo.com" /></div>
+          <div><label>Data de Nascimento</label><input id="cli-data-nasc" type="date" /></div>
+          <div><label>Profissão</label><input id="cli-profissao" placeholder="Engenheiro" /></div>
           <div><label>Endereço</label><input id="cli-endereco" placeholder="Rua, nº" /></div>
+          <div><label>Bairro</label><input id="cli-bairro" placeholder="Centro" /></div>
+          <div><label>Cidade</label><input id="cli-cidade" placeholder="São Paulo" /></div>
+          <div><label>CEP</label><input id="cli-cep" placeholder="00000-000" /></div>
+          <div><label>UF</label><input id="cli-uf" placeholder="SP" maxlength="2" /></div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <label>Habilitado?</label>
+            <input type="checkbox" id="cli-habilitado" />
+          </div>
           <div class="form-actions">
             <button class="btn-secondary" onclick="cancelarFormCliente()">Cancelar</button>
             <button class="btn-primary" id="salvar-cliente">Salvar</button>
@@ -684,20 +810,21 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Endereço</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Habilitado</th><th>Ações</th></tr></thead>
             <tbody>
               ${clientes.map(c => `
                 <tr>
                   <td>${c.nome}</td>
                   <td>${c.telefone}</td>
                   <td>${c.email}</td>
-                  <td>${c.endereco}</td>
+                  <td>${c.cidade}</td>
+                  <td>${c.habilitado ? '✅ Sim' : '❌ Não'}</td>
                   <td>
                     <button class="btn-secondary" onclick="editarCliente(${c.id})">✎</button>
                     <button class="btn-secondary" onclick="excluirCliente(${c.id})">✕</button>
                   </td>
                 </tr>
-              `).join('') || '<tr><td colspan="5">Nenhum cliente cadastrado.</td></tr>'}
+              `).join('') || '<tr><td colspan="6">Nenhum cliente cadastrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -716,13 +843,13 @@
 
       let html = `
         <div class="page-header-row">
-          <div><h1 class="page-title">Vendas</h1><p class="page-subtitle">Registrar nova venda</p></div>
+          <div><h1 class="page-title">Vendas</h1><p class="page-subtitle">Registrar venda e gerar contrato</p></div>
           <button class="btn-primary" onclick="abrirFormVenda()">+ Nova Venda</button>
         </div>
         <div id="form-venda" class="form-grid hidden">
           <div><label>Veículo</label>
             <select id="venda-veiculo">
-              ${disponiveis.map(v => `<option value="${v.id}">${v.marca} ${v.modelo} (R$ ${v.preco})</option>`).join('')}
+              ${disponiveis.map(v => `<option value="${v.id}">${v.marca} ${v.modelo} (R$ ${v.valor})</option>`).join('')}
               ${disponiveis.length === 0 ? '<option value="">Nenhum veículo disponível</option>' : ''}
             </select>
           </div>
@@ -741,7 +868,7 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Veículo</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Veículo</th><th>Cliente</th><th>Data</th><th>Valor</th><th>Contrato</th><th>Ações</th></tr></thead>
             <tbody>
               ${vendas.map(v => {
                 const veic = veiculos.find(x => x.id === v.veiculoId);
@@ -751,9 +878,10 @@
                   <td>${cli ? cli.nome : 'N/A'}</td>
                   <td>${v.data}</td>
                   <td>R$ ${v.valor}</td>
+                  <td><button class="btn-pdf" onclick="gerarContrato(${v.id})">📄 PDF</button></td>
                   <td><button class="btn-secondary" onclick="excluirVenda(${v.id})">✕</button></td>
                 </tr>`;
-              }).join('') || '<tr><td colspan="5">Nenhuma venda registrada.</td></tr>'}
+              }).join('') || '<tr><td colspan="6">Nenhuma venda registrada.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -762,7 +890,7 @@
     }
 
     // ============================
-    //  EVENTOS E FUNÇÕES GLOBAIS
+    //  FUNÇÕES DE EVENTOS E CRUD
     // ============================
 
     // ---- LEADS ----
@@ -826,41 +954,78 @@
 
     // ---- VEÍCULOS ----
     let editVeiculoId = null;
+    let crvDataURL = '';
+
     window.abrirFormVeiculo = function(id) {
       const form = document.getElementById('form-veiculo');
       form.classList.remove('hidden');
       document.getElementById('veic-preview').style.display = 'none';
       document.getElementById('veic-nome-arquivo').textContent = '';
+      crvDataURL = '';
+
+      // Preenche modelos conforme marca selecionada
+      const marcaSelect = document.getElementById('veic-marca');
+      const modeloSelect = document.getElementById('veic-modelo');
+      marcaSelect.addEventListener('change', function() {
+        const marca = this.value;
+        modeloSelect.innerHTML = '<option value="">Selecione</option>';
+        if (marca && MODELOS_BY_MARCA[marca]) {
+          MODELOS_BY_MARCA[marca].forEach(m => {
+            modeloSelect.innerHTML += `<option>${m}</option>`;
+          });
+        }
+      });
+
       if (id) {
         const veiculos = getData('veiculos');
         const v = veiculos.find(x => x.id === id);
         if (v) {
           document.getElementById('veic-marca').value = v.marca;
+          // Dispara evento change para carregar modelos
+          const evt = new Event('change');
+          document.getElementById('veic-marca').dispatchEvent(evt);
           document.getElementById('veic-modelo').value = v.modelo;
           document.getElementById('veic-ano').value = v.ano;
-          document.getElementById('veic-preco').value = v.preco;
+          document.getElementById('veic-cor').value = v.cor;
+          document.getElementById('veic-combustivel').value = v.combustivel;
+          document.getElementById('veic-km').value = v.km;
+          document.getElementById('veic-placa').value = v.placa;
+          document.getElementById('veic-renavam').value = v.renavam;
+          document.getElementById('veic-chassi').value = v.chassi;
+          document.getElementById('veic-valor').value = v.valor;
           document.getElementById('veic-desc').value = v.descricao || '';
-          if (v.imagem) {
-            document.getElementById('veic-preview').src = v.imagem;
+          if (v.crv) {
+            document.getElementById('veic-preview').src = v.crv;
             document.getElementById('veic-preview').style.display = 'block';
+            crvDataURL = v.crv;
           }
           editVeiculoId = id;
         }
       } else {
         document.getElementById('veic-marca').value = '';
-        document.getElementById('veic-modelo').value = '';
+        document.getElementById('veic-modelo').innerHTML = '<option value="">Selecione a marca primeiro</option>';
         document.getElementById('veic-ano').value = '';
-        document.getElementById('veic-preco').value = '';
+        document.getElementById('veic-cor').value = '';
+        document.getElementById('veic-combustivel').value = '';
+        document.getElementById('veic-km').value = '';
+        document.getElementById('veic-placa').value = '';
+        document.getElementById('veic-renavam').value = '';
+        document.getElementById('veic-chassi').value = '';
+        document.getElementById('veic-valor').value = '';
         document.getElementById('veic-desc').value = '';
-        document.getElementById('veic-imagem').value = '';
+        document.getElementById('veic-crv').value = '';
         document.getElementById('veic-preview').style.display = 'none';
         editVeiculoId = null;
+        crvDataURL = '';
       }
     };
+
     window.cancelarFormVeiculo = function() {
       document.getElementById('form-veiculo').classList.add('hidden');
       editVeiculoId = null;
+      crvDataURL = '';
     };
+
     window.excluirVeiculo = function(id) {
       if (confirm('Excluir este veículo?')) {
         let veiculos = getData('veiculos');
@@ -869,28 +1034,56 @@
         renderPage('veiculos');
       }
     };
+
     window.editarVeiculo = function(id) {
       abrirFormVeiculo(id);
     };
 
-    // Enviar WhatsApp
-    window.enviarWhatsApp = function(id) {
-      const veiculos = getData('veiculos');
-      const v = veiculos.find(x => x.id === id);
-      if (!v) return;
-      const msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nPreço: R$ ${v.preco}\nDescrição: ${v.descricao || '—'}\n\nEntre em contato para mais informações.`;
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+    // Simular OCR - preenche campos com dados aleatórios
+    window.simularOCR = function() {
+      const marcas = MARCAS;
+      const marca = marcas[Math.floor(Math.random() * marcas.length)];
+      const modelos = MODELOS_BY_MARCA[marca] || ['Modelo'];
+      const modelo = modelos[Math.floor(Math.random() * modelos.length)];
+      const ano = (2020 + Math.floor(Math.random() * 6)).toString();
+      const cor = CORES[Math.floor(Math.random() * CORES.length)];
+      const combustivel = COMBUSTIVEIS[Math.floor(Math.random() * COMBUSTIVEIS.length)];
+      const km = (Math.floor(Math.random() * 80000) + 10000).toString();
+      const placa = String.fromCharCode(65 + Math.floor(Math.random()*26)) + 
+                    String.fromCharCode(65 + Math.floor(Math.random()*26)) + 
+                    String.fromCharCode(65 + Math.floor(Math.random()*26)) + '-' +
+                    (1000 + Math.floor(Math.random()*9000)).toString();
+      const renavam = (10000000000 + Math.floor(Math.random()*90000000000)).toString().slice(0,11);
+      const chassi = '9BD' + (100000000000000 + Math.floor(Math.random()*900000000000000)).toString().slice(0,14);
+      const valor = (50000 + Math.floor(Math.random()*150000)).toString();
+
+      // Preenche os campos
+      const marcaSelect = document.getElementById('veic-marca');
+      marcaSelect.value = marca;
+      const evt = new Event('change');
+      marcaSelect.dispatchEvent(evt);
+      document.getElementById('veic-modelo').value = modelo;
+      document.getElementById('veic-ano').value = ano;
+      document.getElementById('veic-cor').value = cor;
+      document.getElementById('veic-combustivel').value = combustivel;
+      document.getElementById('veic-km').value = km;
+      document.getElementById('veic-placa').value = placa;
+      document.getElementById('veic-renavam').value = renavam;
+      document.getElementById('veic-chassi').value = chassi;
+      document.getElementById('veic-valor').value = valor;
+      document.getElementById('veic-desc').value = 'Veículo reconhecido automaticamente.';
+      alert('Dados simulados preenchidos! (Isso é apenas uma demonstração. Em produção, use uma API de OCR real.)');
     };
 
-    // Upload de imagem
+    // Upload da CRV
     document.addEventListener('change', function(e) {
-      if (e.target && e.target.id === 'veic-imagem') {
+      if (e.target && e.target.id === 'veic-crv') {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = function(ev) {
-            document.getElementById('veic-preview').src = ev.target.result;
+            crvDataURL = ev.target.result;
+            document.getElementById('veic-preview').src = crvDataURL;
             document.getElementById('veic-preview').style.display = 'block';
             document.getElementById('veic-nome-arquivo').textContent = file.name;
           };
@@ -901,25 +1094,44 @@
 
     document.addEventListener('click', function(e) {
       if (e.target.id === 'salvar-veiculo') {
-        const marca = document.getElementById('veic-marca').value.trim();
-        const modelo = document.getElementById('veic-modelo').value.trim();
+        const marca = document.getElementById('veic-marca').value;
+        const modelo = document.getElementById('veic-modelo').value;
         const ano = document.getElementById('veic-ano').value.trim();
-        const preco = document.getElementById('veic-preco').value.trim();
+        const cor = document.getElementById('veic-cor').value;
+        const combustivel = document.getElementById('veic-combustivel').value;
+        const km = document.getElementById('veic-km').value.trim();
+        const placa = document.getElementById('veic-placa').value.trim().toUpperCase();
+        const renavam = document.getElementById('veic-renavam').value.trim();
+        const chassi = document.getElementById('veic-chassi').value.trim().toUpperCase();
+        const valor = document.getElementById('veic-valor').value.trim();
         const desc = document.getElementById('veic-desc').value.trim();
-        const imagem = document.getElementById('veic-preview').src || '';
-        if (!marca || !modelo || !ano || !preco) return alert('Preencha todos os campos obrigatórios.');
+
+        if (!marca || !modelo || !ano || !cor || !combustivel || !km || !placa || !renavam || !chassi || !valor) {
+          return alert('Preencha todos os campos obrigatórios.');
+        }
+
         let veiculos = getData('veiculos');
         if (editVeiculoId) {
-          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, preco, descricao: desc, imagem } : v);
+          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, crv: crvDataURL } : v);
         } else {
           const newId = veiculos.length ? Math.max(...veiculos.map(v => v.id)) + 1 : 1;
-          veiculos.push({ id: newId, marca, modelo, ano, preco, descricao: desc, imagem, status: 'disponivel' });
+          veiculos.push({ id: newId, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, crv: crvDataURL, status: 'disponivel' });
         }
         setData('veiculos', veiculos);
         cancelarFormVeiculo();
         renderPage('veiculos');
       }
     });
+
+    // WhatsApp
+    window.enviarWhatsApp = function(id) {
+      const veiculos = getData('veiculos');
+      const v = veiculos.find(x => x.id === id);
+      if (!v) return;
+      const msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nCor: ${v.cor}\nKm: ${v.km}\nPlaca: ${v.placa}\nPreço: R$ ${v.valor}\nDescrição: ${v.descricao || '—'}\n\nEntre em contato para mais informações.`;
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    };
 
     // ---- CLIENTES ----
     let editClienteId = null;
@@ -933,14 +1145,28 @@
           document.getElementById('cli-nome').value = c.nome;
           document.getElementById('cli-telefone').value = c.telefone;
           document.getElementById('cli-email').value = c.email;
-          document.getElementById('cli-endereco').value = c.endereco;
+          document.getElementById('cli-data-nasc').value = c.dataNasc || '';
+          document.getElementById('cli-profissao').value = c.profissao || '';
+          document.getElementById('cli-endereco').value = c.endereco || '';
+          document.getElementById('cli-bairro').value = c.bairro || '';
+          document.getElementById('cli-cidade').value = c.cidade || '';
+          document.getElementById('cli-cep').value = c.cep || '';
+          document.getElementById('cli-uf').value = c.uf || '';
+          document.getElementById('cli-habilitado').checked = c.habilitado || false;
           editClienteId = id;
         }
       } else {
         document.getElementById('cli-nome').value = '';
         document.getElementById('cli-telefone').value = '';
         document.getElementById('cli-email').value = '';
+        document.getElementById('cli-data-nasc').value = '';
+        document.getElementById('cli-profissao').value = '';
         document.getElementById('cli-endereco').value = '';
+        document.getElementById('cli-bairro').value = '';
+        document.getElementById('cli-cidade').value = '';
+        document.getElementById('cli-cep').value = '';
+        document.getElementById('cli-uf').value = '';
+        document.getElementById('cli-habilitado').checked = false;
         editClienteId = null;
       }
     };
@@ -965,14 +1191,22 @@
         const nome = document.getElementById('cli-nome').value.trim();
         const telefone = document.getElementById('cli-telefone').value.trim();
         const email = document.getElementById('cli-email').value.trim();
+        const dataNasc = document.getElementById('cli-data-nasc').value;
+        const profissao = document.getElementById('cli-profissao').value.trim();
         const endereco = document.getElementById('cli-endereco').value.trim();
-        if (!nome || !telefone) return alert('Preencha nome e telefone.');
+        const bairro = document.getElementById('cli-bairro').value.trim();
+        const cidade = document.getElementById('cli-cidade').value.trim();
+        const cep = document.getElementById('cli-cep').value.trim();
+        const uf = document.getElementById('cli-uf').value.trim().toUpperCase();
+        const habilitado = document.getElementById('cli-habilitado').checked;
+
+        if (!nome || !telefone || !email) return alert('Preencha nome, telefone e e-mail.');
         let clientes = getData('clientes');
         if (editClienteId) {
-          clientes = clientes.map(c => c.id === editClienteId ? { ...c, nome, telefone, email, endereco } : c);
+          clientes = clientes.map(c => c.id === editClienteId ? { ...c, nome, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado } : c);
         } else {
           const newId = clientes.length ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
-          clientes.push({ id: newId, nome, telefone, email, endereco });
+          clientes.push({ id: newId, nome, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado });
         }
         setData('clientes', clientes);
         cancelarFormCliente();
@@ -994,7 +1228,6 @@
         let vendas = getData('vendas');
         const venda = vendas.find(v => v.id === id);
         if (venda) {
-          // Reverte status do veículo
           let veiculos = getData('veiculos');
           veiculos = veiculos.map(v => v.id === venda.veiculoId ? { ...v, status: 'disponivel' } : v);
           setData('veiculos', veiculos);
@@ -1012,16 +1245,13 @@
         const data = document.getElementById('venda-data').value;
         const valor = document.getElementById('venda-valor').value.trim();
         if (!veiculoId || !clienteId || !data || !valor) return alert('Preencha todos os campos.');
-        // Verifica se veículo ainda está disponível
         let veiculos = getData('veiculos');
         const veic = veiculos.find(v => v.id === veiculoId);
         if (!veic || veic.status !== 'disponivel') return alert('Veículo não está mais disponível.');
-        // Registrar venda
         let vendas = getData('vendas');
         const newId = vendas.length ? Math.max(...vendas.map(v => v.id)) + 1 : 1;
         vendas.push({ id: newId, veiculoId, clienteId, data, valor });
         setData('vendas', vendas);
-        // Atualiza status do veículo
         veiculos = veiculos.map(v => v.id === veiculoId ? { ...v, status: 'vendido' } : v);
         setData('veiculos', veiculos);
         cancelarFormVenda();
@@ -1030,10 +1260,129 @@
     });
 
     // ============================
+    //  GERAR CONTRATO EM PDF
+    // ============================
+    window.gerarContrato = function(vendaId) {
+      const vendas = getData('vendas');
+      const venda = vendas.find(v => v.id === vendaId);
+      if (!venda) return alert('Venda não encontrada.');
+      const veiculos = getData('veiculos');
+      const veic = veiculos.find(v => v.id === venda.veiculoId);
+      const clientes = getData('clientes');
+      const cli = clientes.find(c => c.id === venda.clienteId);
+      if (!veic || !cli) return alert('Dados do veículo ou cliente não encontrados.');
+
+      // Monta o HTML do contrato
+      const contratoHTML = `
+        <div class="contrato-pdf">
+          <h1>CONTRATO DE COMPRA E VENDA</h1>
+          <hr />
+          <p><strong>VENDEDOR:</strong> DANIEL MINOWA DA SILVA LTDA, CNPJ 61.867.795/0001-24, Av. Américo Barreira, 909, loja 06 - Demócrito Rocha - CEP 60440-093 - Fortaleza-CE.</p>
+          <p><strong>COMPRADOR:</strong> ${cli.nome}, CPF: _______________, Endereço: ${cli.endereco || ''}, ${cli.bairro || ''}, ${cli.cidade || ''} - ${cli.uf || ''}, CEP: ${cli.cep || ''}, Telefone: ${cli.telefone}, E-mail: ${cli.email}</p>
+          <hr />
+          <p>As partes acima qualificadas resolvem entabular a presente compra e venda na forma e termos a seguir expostos:</p>
+
+          <div class="clausula">
+            <strong>CLÁUSULA PRIMEIRA – DO OBJETO</strong>
+            <table>
+              <tr><td><strong>Marca:</strong> ${veic.marca}</td><td><strong>Modelo:</strong> ${veic.modelo}</td></tr>
+              <tr><td><strong>Cor:</strong> ${veic.cor}</td><td><strong>Combustível:</strong> ${veic.combustivel}</td></tr>
+              <tr><td><strong>Ano Fab/Mod:</strong> ${veic.ano}</td><td><strong>Km:</strong> ${veic.km}</td></tr>
+              <tr><td><strong>Placa:</strong> ${veic.placa}</td><td><strong>Renavam:</strong> ${veic.renavam}</td></tr>
+              <tr><td><strong>Chassi:</strong> ${veic.chassi}</td><td><strong>Valor:</strong> R$ ${veic.valor}</td></tr>
+            </table>
+            <p>O pagamento se dará da seguinte forma: <em>${venda.valor} em parcela única.</em></p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA SEGUNDA – DA VISTORIA E AVALIAÇÃO DO VEÍCULO</strong>
+            <p>O COMPRADOR declara ter vistoriado e avaliado o estado em que se encontra o veículo ora negociado, estando ciente que o veículo está em perfeito estado de funcionamento. Qualquer vício aparente, tais como arranhões, estado dos pneus, iluminação interna e externa do veículo, estado da bancada interna e demais vícios de constatação simples, são a partir do momento de responsabilidade do comprador, visto que declara ter vistoriado o veículo.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA TERCEIRA – DA RESPONSABILIDADE CIVIL E CRIMINAL</strong>
+            <p>A partir da assinatura deste contrato, o COMPRADOR se responsabiliza por quaisquer danos, seja no âmbito civil ou criminal, decorrente da utilização do veículo ora adquirido, inclusive multas e pontuações na CNH decorrentes de tais infrações, sejam elas de âmbito Municipal, Estadual e ou Federal, bem como, fica responsável também, nos mesmos termos acima, até a presente data e hora, por eventual veículo dado na compra do objeto do presente, respondendo ainda o comprador, pela evicção e eventuais vícios redibitórios do mesmo. O VENDEDOR, acaso tenha recebido algum veículo do COMPRADOR, como forma de pagamento do bem objeto do presente, fica responsável, por quaisquer danos, seja no âmbito civil ou penal, decorrente da utilização do veículo ora recebido, inclusive multas e pontuações na CNH decorrentes de tais infrações, sejam elas de âmbito Municipal, Estadual e ou Federal;</p>
+            <p>Deste modo, o presente instrumento é firmado nos termos do artigo 784, III do CPC, razão pela qual é um título executivo extrajudicial, mesmo porque, o "quantum debeatur" depende de simples cálculo aritmético, a partir de dados consignados em documentos comprobatórios do débito (multas de trânsito, IPVA, licenciamento e outros).</p>
+            <p>Nesta seara, a VENDEDORA poderá executar o presente para cobrança de eventuais valores encontrados e de responsabilidade do COMPRADOR.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA QUARTA – DA GARANTIA</strong>
+            <p>Para os veículos usados a VENDEDORA fornece a garantia pelo tempo exigido por lei (90 dias), e somente para os componentes internos de motor e caixa de câmbio, contudo, a mesma estará automaticamente cancelada, no caso de mau uso do veículo em questão, em caso deste último ter suas características originais (as quais são especificadas pelo fabricante do manual do veículo), alteradas, bem como, quando o mesmo for utilizado fora dos padrões e ou limites de carga e/ou de rotação especificados pelo fabricantes ou ainda, se for utilizado em competições de qualquer espécie ou natureza, além do que, se tiver sua manutenção negligenciada.</p>
+            <p>Todo e qualquer serviço e ou conserto coberto por esta garantia deverá ser executado por assistência técnica ou oficina mecânica indicada por esta VENDEDORA e somente após orçamento aprovado pela VENDEDORA; Qualquer manutenção feita pelo COMPRADOR em oficina própria do mesmo, não será ressarcido pelo VENDEDOR; Para os veículos novos, isto é, OKM, a garantia é a de fábrica.</p>
+            <p>Ficam de fora da presente garantia, os componentes eletroeletrônicos e do sistema de arrefecimento do veículo, como por exemplo: sensores, módulos em geral, centrais, mangueiras, bomba d'água, fiações, etc.</p>
+            <p>Do mesmo modo, também não são cobertos eventuais vazamentos de óleo advindos de falhas ou danos em juntas, vedações e/ou retentores, bem como quebras de correntes da falta de lubrificantes ou por uso indevido do veículo, bem como eventuais danos gerados pelo superaquecimento do motor, seja por falha da bomba d'água, falta de refrigeração ou ainda em decorrência da alteração do tipo de combustível utilizado pelo veículo, além do que, utilização de combustível adulterado.</p>
+            <p>Estão fora da presente garantia, itens de desgaste natural e vida útil predeterminados, tais como: discos e platô de embreagem, discos, tambores, pastilhas e lonas de freio, cabos de vela, correias em geral, bateria, amortecedores e molas, entre outros, incluindo-se ainda os itens considerados de manutenção normal, como limpeza de bicos injetores, fluídos e óleos em geral.</p>
+            <p>A garantia das peças eventualmente substituídas na vigência deste, finda-se com o término do mesmo. Todo e qualquer custo não relacionado diretamente com a garantia do veículo, tais como despesas com táxi, guincho, alimentação, hospedagem etc., não é de responsabilidade da VENDEDORA.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA QUINTA – TRANSFERÊNCIA DO BEM</strong>
+            <p>A transferência do bem objeto do presente instrumento para o nome do comprador ou de alguém por ele determinado, só se dará após a total quitação do bem descrito na cláusula primeira deste, sendo que na hipótese de pagamento em cheque(s) ou qualquer outro título de crédito, após a compensação ou quitação do(s) mesmo(s).</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA SEXTA – CLÁUSULA RESOLUTIVA</strong>
+            <p>As partes VENDEDOR(A) e COMPRADOR(A), estabelecem desde já, que no caso de não cumprimento do presente, quanto aos pagamentos devidos pelo COMPRADOR ao VENDEDOR, na forma e prazos estabelecidos no bojo deste instrumento particular de contrato, os quais foram avençados de comum acordo entre partes, permitirá ao VENDEDOR, como melhor lhe aprouver, pedir a resolução do contrato ou, se preferir, exigir o cumprimento do mesmo, independentemente de notificação ou interpelação, nos termos do que reza o artigo 475 do Código Civil.</p>
+            <p>Fica desde já avençado entre estas partes, que na hipótese de resolução do contrato, em se tratando de veículo usado, o COMPRADOR deverá pagar ao VENDEDOR, até a devolução do bem objeto deste instrumento, o valor diário pelo uso do veículo, na base de 0,5% (meio por cento) sobre o valor do mesmo, em se tratando de veículo novo (0 Km), o COMPRADOR deverá pagar ao VENDEDOR, até a devolução do bem objeto deste instrumento, o valor diário pelo uso do veículo, na base de 0,5% (meio por cento) sobre o valor do bem, mais o valor decorrente da depreciação sofrida pelo veículo em razão de não ser mais o mesmo um bem 0Km, servindo-se para tal verificação (depreciação), a tabela FIPE atualizada.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA SÉTIMA – DO DEPÓSITO</strong>
+            <p>Nos termos do que estabelece o artigo 629 do Código Civil, o COMPRADOR assume, de forma gratuita, a condição de depositário do bem objeto do presente, obrigando-se pela guarda e conservação dele, até o integral pagamento do preço.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA OITAVA – LEI GERAL DE PROTEÇÃO DE DADOS</strong>
+            <p>A empresa VENDEDORA em questão, está em conformidade com a Lei 13.709/2018 - LGPD, protegendo os direitos fundamentais de liberdade e de privacidade e o livre desenvolvimento da personalidade da pessoa natural no que diz respeito às operações realizadas com os dados pessoais armazenados de forma física ou digital ora fornecidos para o fim de elaborar este documento e realizar os trâmites necessários para a perfeita prestação de serviços contratada em questão.</p>
+            <p>Em respeito ao artigo 7°, inciso I e artigo 8°, § 1° da aludida Lei, tais dados serão utilizados somente, e tão somente, com a finalidade de manutenção necessária para este contrato, estando o titular autorizando e dando sua ciência de fornecimento para este fim específico.</p>
+          </div>
+
+          <div class="clausula">
+            <strong>CLÁUSULA NONA – FORO DE ELEIÇÃO</strong>
+            <p>Para dirimir quaisquer dúvidas decorrentes do presente, as partes estabelecem desde já, com exclusividade, o foro da Comarca da negociação, por mais privilegiado que outro possa ser. O COMPRADOR, de livre e espontânea vontade, RENÚNCIA ao foro previsto no artigo 101, I do Código de Defesa do Consumidor.</p>
+          </div>
+
+          <p><strong>E, para que produza seus legais efeitos, firmo o presente termo.</strong></p>
+
+          <div style="display:flex; justify-content:space-between; margin-top:30px;">
+            <div>Local: Fortaleza, _____ de _______________ de ______</div>
+            <div> </div>
+          </div>
+
+          <div class="assinatura">
+            <div>_________________________________<br />COMPRADOR</div>
+            <div>_________________________________<br />VENDEDOR</div>
+          </div>
+        </div>
+      `;
+
+      // Cria um container temporário para gerar o PDF
+      const container = document.createElement('div');
+      container.innerHTML = contratoHTML;
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      document.body.appendChild(container);
+
+      // Usa a biblioteca html2pdf para gerar o PDF
+      const opt = {
+        margin:        [0.5, 0.5, 0.5, 0.5],
+        filename:     `Contrato_Venda_${veic.modelo}_${cli.nome}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, letterRendering: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(container).save().then(() => {
+        document.body.removeChild(container);
+      });
+    };
+
+    // ============================
     //  INICIALIZAÇÃO
     // ============================
     showLogin();
-    // Se quiser pular login (debug), descomente:
+    // Para pular login (debug), descomente a linha abaixo:
     // showDashboard();
 
   })();
