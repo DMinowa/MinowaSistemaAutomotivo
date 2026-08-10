@@ -4,10 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Minowa Veículos</title>
-  <!-- Biblioteca para gerar PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
-    /* ===== Variáveis ===== */
     :root {
       --bg-page: #0c0c0d;
       --bg-card: #161617;
@@ -16,25 +14,17 @@
       --text-secondary: #9a9a9c;
       --accent: #e0263c;
     }
-
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--bg-page);
       color: var(--text-primary);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    a {
-      text-decoration: none;
-      color: var(--text-secondary);
-    }
-    .hidden {
-      display: none !important;
-    }
+    a { text-decoration: none; color: var(--text-secondary); }
+    .hidden { display: none !important; }
 
-    /* ===== Auth ===== */
+    /* Auth */
     .auth-page {
       min-height: 100vh;
       display: flex;
@@ -52,26 +42,10 @@
       display: flex;
       flex-direction: column;
     }
-    .brand {
-      font-weight: 700;
-      font-size: 18px;
-      margin-bottom: 2px;
-    }
-    .brand-sub {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 28px;
-    }
-    .auth-title {
-      font-size: 20px;
-      margin: 16px 0 20px;
-    }
-    .auth-label {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      margin-top: 12px;
-    }
+    .brand { font-weight: 700; font-size: 18px; margin-bottom: 2px; }
+    .brand-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 28px; }
+    .auth-title { font-size: 20px; margin: 16px 0 20px; }
+    .auth-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; margin-top: 12px; }
     .auth-input {
       background: var(--bg-page);
       border: 1px solid var(--border);
@@ -81,9 +55,7 @@
       font-size: 14px;
       outline: none;
     }
-    .auth-input:focus {
-      border-color: var(--accent);
-    }
+    .auth-input:focus { border-color: var(--accent); }
     .auth-button {
       margin-top: 24px;
       background: var(--accent);
@@ -96,23 +68,11 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .auth-button:hover {
-      opacity: 0.85;
-    }
-    .auth-error {
-      color: #ff5c5c;
-      font-size: 13px;
-      margin-top: 12px;
-      display: none;
-    }
+    .auth-button:hover { opacity: 0.85; }
+    .auth-error { color: #ff5c5c; font-size: 13px; margin-top: 12px; display: none; }
 
-    /* ===== Layout ===== */
-    .layout {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ===== Sidebar ===== */
+    /* Layout */
+    .layout { display: flex; min-height: 100vh; }
     .sidebar {
       width: 220px;
       background: var(--bg-card);
@@ -123,12 +83,8 @@
       flex-direction: column;
       justify-content: space-between;
     }
-    .sidebar .brand {
-      margin-bottom: 2px;
-    }
-    .sidebar .brand-sub {
-      margin-bottom: 28px;
-    }
+    .sidebar .brand { margin-bottom: 2px; }
+    .sidebar .brand-sub { margin-bottom: 28px; }
     .nav-item {
       display: block;
       padding: 10px 12px;
@@ -139,18 +95,9 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-primary);
-    }
-    .nav-item.active {
-      background: rgba(224, 38, 60, 0.15);
-      color: var(--accent);
-    }
-    .sidebar-footer {
-      border-top: 1px solid var(--border);
-      padding-top: 16px;
-    }
+    .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+    .nav-item.active { background: rgba(224,38,60,0.15); color: var(--accent); }
+    .sidebar-footer { border-top: 1px solid var(--border); padding-top: 16px; }
     .logout-button {
       width: 100%;
       background: transparent;
@@ -162,27 +109,15 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
-    .logout-button:hover {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-primary);
-    }
+    .logout-button:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
 
-    /* ===== Main ===== */
     .main {
       flex: 1;
       padding: 32px 40px;
       overflow-x: auto;
     }
-    .page-title {
-      font-size: 26px;
-      font-weight: 700;
-      margin: 0 0 4px;
-    }
-    .page-subtitle {
-      color: var(--text-secondary);
-      margin: 0 0 24px;
-      font-size: 14px;
-    }
+    .page-title { font-size: 26px; font-weight: 700; margin: 0 0 4px; }
+    .page-subtitle { color: var(--text-secondary); margin: 0 0 24px; font-size: 14px; }
     .page-header-row {
       display: flex;
       align-items: center;
@@ -201,9 +136,7 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .btn-primary:hover {
-      opacity: 0.85;
-    }
+    .btn-primary:hover { opacity: 0.85; }
     .btn-secondary {
       background: transparent;
       color: var(--text-secondary);
@@ -214,10 +147,7 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.04);
-      color: var(--text-primary);
-    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
     .btn-whatsapp {
       background: #25d366;
       color: #fff;
@@ -229,9 +159,7 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .btn-whatsapp:hover {
-      opacity: 0.8;
-    }
+    .btn-whatsapp:hover { opacity: 0.8; }
     .btn-pdf {
       background: #ff6b6b;
       color: #fff;
@@ -243,11 +171,8 @@
       cursor: pointer;
       transition: opacity 0.2s;
     }
-    .btn-pdf:hover {
-      opacity: 0.8;
-    }
+    .btn-pdf:hover { opacity: 0.8; }
 
-    /* ===== Cards ===== */
     .cards-row {
       display: flex;
       gap: 16px;
@@ -262,17 +187,9 @@
       flex: 1;
       min-width: 160px;
     }
-    .card-label {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-    .card-value {
-      font-size: 30px;
-      font-weight: 700;
-    }
+    .card-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+    .card-value { font-size: 30px; font-weight: 700; }
 
-    /* ===== Tabelas ===== */
     .table-wrap {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -298,24 +215,19 @@
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
     }
-    tr:last-child td {
-      border-bottom: none;
-    }
+    tr:last-child td { border-bottom: none; }
     .badge {
       display: inline-block;
-      background: rgba(224, 38, 60, 0.15);
+      background: rgba(224,38,60,0.15);
       color: var(--accent);
       padding: 2px 12px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 500;
     }
-    .badge-success {
-      background: rgba(46, 204, 113, 0.15);
-      color: #2ecc71;
-    }
+    .badge-success { background: rgba(46,204,113,0.15); color: #2ecc71; }
+    .badge-warning { background: rgba(241,196,15,0.15); color: #f1c40f; }
 
-    /* ===== Formulários ===== */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -346,19 +258,13 @@
       margin-bottom: 4px;
       display: block;
     }
-    .form-grid .full-width {
-      grid-column: 1 / -1;
-    }
-    .form-grid .half-width {
-      grid-column: span 2;
-    }
+    .form-grid .full-width { grid-column: 1 / -1; }
     .form-actions {
       grid-column: 1 / -1;
       display: flex;
       gap: 12px;
       justify-content: flex-end;
     }
-
     .img-preview {
       max-width: 120px;
       max-height: 80px;
@@ -366,12 +272,7 @@
       object-fit: cover;
     }
 
-    /* ===== Responsivo ===== */
-    @media (max-width: 900px) {
-      .form-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
+    @media (max-width: 900px) { .form-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 700px) {
       .sidebar { width: 180px; padding: 16px 12px; }
       .main { padding: 20px; }
@@ -404,7 +305,7 @@
       .card { min-width: 120px; padding: 16px; }
     }
 
-    /* Estilo para o contrato em PDF */
+    /* Estilo para o contrato PDF */
     .contrato-pdf {
       font-family: Arial, sans-serif;
       background: white;
@@ -421,26 +322,17 @@
       border-bottom: 2px solid #000;
       padding-bottom: 10px;
     }
-    .contrato-pdf .dados {
-      margin: 20px 0;
-    }
-    .contrato-pdf .dados table {
+    .contrato-pdf table {
       width: 100%;
       border-collapse: collapse;
-      min-width: auto;
+      margin: 10px 0;
     }
-    .contrato-pdf .dados td {
-      padding: 6px 10px;
+    .contrato-pdf td {
       border: 1px solid #333;
+      padding: 6px 10px;
     }
-    .contrato-pdf .clausula {
-      margin: 18px 0;
-    }
-    .contrato-pdf .clausula strong {
-      display: block;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
+    .contrato-pdf .clausula { margin: 18px 0; }
+    .contrato-pdf .clausula strong { display: block; font-size: 16px; margin-bottom: 4px; }
     .contrato-pdf .assinatura {
       margin-top: 40px;
       display: flex;
@@ -450,7 +342,6 @@
 </head>
 <body>
 
-<!-- ===== LOGIN ===== -->
 <div id="page-login" class="auth-page">
   <div class="auth-card">
     <div class="brand">MINOWA</div>
@@ -465,7 +356,6 @@
   </div>
 </div>
 
-<!-- ===== DASHBOARD ===== -->
 <div id="page-dashboard" class="layout hidden">
   <aside class="sidebar">
     <div>
@@ -490,12 +380,9 @@
   (function() {
     'use strict';
 
-    // ============================
-    //  AUTENTICAÇÃO
-    // ============================
+    // ===== AUTENTICAÇÃO =====
     const ADMIN_EMAIL = 'diegoveiculocar@gmail.com';
     const ADMIN_PASS = 'minowaveiculos';
-
     const pageLogin = document.getElementById('page-login');
     const pageDashboard = document.getElementById('page-dashboard');
     const mainContent = document.getElementById('main-content');
@@ -510,7 +397,6 @@
       pageDashboard.classList.remove('hidden');
       renderPage('dashboard');
     }
-
     document.getElementById('login-btn').addEventListener('click', function(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
@@ -522,12 +408,9 @@
         loginError.style.display = 'block';
       }
     });
-
     document.getElementById('logout-btn').addEventListener('click', showLogin);
 
-    // ============================
-    //  NAVEGAÇÃO
-    // ============================
+    // ===== NAVEGAÇÃO =====
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
       item.addEventListener('click', function() {
@@ -537,78 +420,67 @@
       });
     });
 
-    // ============================
-    //  DADOS (localStorage)
-    // ============================
-    function getData(key) {
-      return JSON.parse(localStorage.getItem(key)) || [];
-    }
-    function setData(key, data) {
-      localStorage.setItem(key, JSON.stringify(data));
-    }
+    // ===== DADOS (localStorage) =====
+    function getData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
+    function setData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-    // Listas pré-definidas
-    const MARCAS = ['Fiat', 'Volkswagen', 'Chevrolet', 'Ford', 'Toyota', 'Honda', 'Hyundai', 'Nissan', 'Renault', 'Peugeot', 'Citroën', 'Jeep', 'Mitsubishi', 'Suzuki', 'Kia', 'BMW', 'Mercedes-Benz', 'Audi', 'Volvo', 'Land Rover'];
+    const MARCAS = ['Fiat','Volkswagen','Chevrolet','Ford','Toyota','Honda','Hyundai','Nissan','Renault','Peugeot','Citroën','Jeep','Mitsubishi','Suzuki','Kia','BMW','Mercedes-Benz','Audi','Volvo','Land Rover'];
     const MODELOS_BY_MARCA = {
-      'Fiat': ['Uno', 'Palio', 'Strada', 'Toro', 'Argo', 'Cronos', 'Mobi', 'Pulse', 'Fastback'],
-      'Volkswagen': ['Gol', 'Polo', 'Virtus', 'T-Cross', 'Nivus', 'Taos', 'Saveiro', 'Amarok', 'Golf'],
-      'Chevrolet': ['Onix', 'Prisma', 'Cruze', 'Tracker', 'Equinox', 'S10', 'Spin', 'Celta'],
-      'Ford': ['Ka', 'Fiesta', 'Focus', 'EcoSport', 'Ranger', 'Bronco', 'Mustang'],
-      'Toyota': ['Corolla', 'Yaris', 'Hilux', 'SW4', 'Etios', 'Camry', 'RAV4'],
-      'Honda': ['Civic', 'Fit', 'HR-V', 'CR-V', 'City', 'WR-V'],
-      'Hyundai': ['HB20', 'Creta', 'Tucson', 'Santa Fe', 'Azera'],
-      'Nissan': ['Kicks', 'Versa', 'Sentra', 'Frontier', 'Leaf'],
-      'Renault': ['Kwid', 'Sandero', 'Logan', 'Duster', 'Captur', 'Oroch'],
-      'Peugeot': ['208', '2008', '3008', 'Partner'],
-      'Citroën': ['C3', 'Aircross', 'C4 Cactus', 'Jumpy'],
-      'Jeep': ['Renegade', 'Compass', 'Commander', 'Wrangler'],
-      'Mitsubishi': ['Lancer', 'Outlander', 'Pajero', 'Eclipse Cross'],
-      'Suzuki': ['Jimny', 'Vitara', 'Swift'],
-      'Kia': ['Sportage', 'Sorento', 'Cerato', 'Stinger'],
-      'BMW': ['X1', 'X3', 'X5', 'Série 3', 'Série 5'],
-      'Mercedes-Benz': ['Classe A', 'Classe C', 'GLA', 'GLC', 'GLE'],
-      'Audi': ['A3', 'A4', 'Q3', 'Q5', 'Q7'],
-      'Volvo': ['XC40', 'XC60', 'XC90', 'S60'],
-      'Land Rover': ['Evoque', 'Discovery', 'Range Rover']
+      'Fiat': ['Uno','Palio','Strada','Toro','Argo','Cronos','Mobi','Pulse','Fastback'],
+      'Volkswagen': ['Gol','Polo','Virtus','T-Cross','Nivus','Taos','Saveiro','Amarok','Golf'],
+      'Chevrolet': ['Onix','Prisma','Cruze','Tracker','Equinox','S10','Spin','Celta'],
+      'Ford': ['Ka','Fiesta','Focus','EcoSport','Ranger','Bronco','Mustang'],
+      'Toyota': ['Corolla','Yaris','Hilux','SW4','Etios','Camry','RAV4'],
+      'Honda': ['Civic','Fit','HR-V','CR-V','City','WR-V'],
+      'Hyundai': ['HB20','Creta','Tucson','Santa Fe','Azera'],
+      'Nissan': ['Kicks','Versa','Sentra','Frontier','Leaf'],
+      'Renault': ['Kwid','Sandero','Logan','Duster','Captur','Oroch'],
+      'Peugeot': ['208','2008','3008','Partner'],
+      'Citroën': ['C3','Aircross','C4 Cactus','Jumpy'],
+      'Jeep': ['Renegade','Compass','Commander','Wrangler'],
+      'Mitsubishi': ['Lancer','Outlander','Pajero','Eclipse Cross'],
+      'Suzuki': ['Jimny','Vitara','Swift'],
+      'Kia': ['Sportage','Sorento','Cerato','Stinger'],
+      'BMW': ['X1','X3','X5','Série 3','Série 5'],
+      'Mercedes-Benz': ['Classe A','Classe C','GLA','GLC','GLE'],
+      'Audi': ['A3','A4','Q3','Q5','Q7'],
+      'Volvo': ['XC40','XC60','XC90','S60'],
+      'Land Rover': ['Evoque','Discovery','Range Rover']
     };
+    const CORES = ['Branco','Preto','Prata','Cinza','Vermelho','Azul','Verde','Amarelo','Laranja','Marrom','Bege','Rosa','Roxo','Dourado','Chumbo'];
+    const COMBUSTIVEIS = ['Gasolina','Álcool','Flex','Diesel','Elétrico','Híbrido'];
+    const STATUS_VEICULO = ['disponivel','vendido','reservado'];
 
-    const CORES = ['Branco', 'Preto', 'Prata', 'Cinza', 'Vermelho', 'Azul', 'Verde', 'Amarelo', 'Laranja', 'Marrom', 'Bege', 'Rosa', 'Roxo', 'Dourado', 'Chumbo'];
-    const COMBUSTIVEIS = ['Gasolina', 'Álcool', 'Flex', 'Diesel', 'Elétrico', 'Híbrido'];
-
-    // Inicializa dados de exemplo
     function initData() {
       if (!localStorage.getItem('veiculos')) {
         setData('veiculos', [
-          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', cor: 'Prata', combustivel: 'Flex', km: 30000, placa: 'ABC-1234', renavam: '12345678901', chassi: '9BD12345678901234', valor: '115000', descricao: 'Único dono, revisões em dia', foto: '', crv: '', status: 'disponivel' },
-          { id: 2, marca: 'Volkswagen', modelo: 'Golf', ano: '2021', cor: 'Vermelho', combustivel: 'Gasolina', km: 45000, placa: 'DEF-5678', renavam: '98765432109', chassi: '9BD98765432109876', valor: '98000', descricao: 'Completo, automático', foto: '', crv: '', status: 'disponivel' }
+          { id:1, marca:'Fiat', modelo:'Toro', ano:'2022', cor:'Prata', combustivel:'Flex', km:'30000', placa:'ABC-1234', renavam:'12345678901', chassi:'9BD12345678901234', valor:'115000', descricao:'Único dono', crv:'', foto:'', status:'disponivel' },
+          { id:2, marca:'Volkswagen', modelo:'Golf', ano:'2021', cor:'Vermelho', combustivel:'Gasolina', km:'45000', placa:'DEF-5678', renavam:'98765432109', chassi:'9BD98765432109876', valor:'98000', descricao:'Completo', crv:'', foto:'', status:'disponivel' }
         ]);
       }
       if (!localStorage.getItem('clientes')) {
         setData('clientes', [
-          { id: 1, nome: 'Carlos Silva', telefone: '(11) 99999-1111', email: 'carlos@email.com', dataNasc: '1985-05-10', profissao: 'Engenheiro', endereco: 'Rua A, 123', bairro: 'Centro', cidade: 'São Paulo', cep: '01000-000', uf: 'SP', habilitado: true },
-          { id: 2, nome: 'Mariana Lima', telefone: '(11) 99999-2222', email: 'mariana@email.com', dataNasc: '1990-08-22', profissao: 'Arquiteta', endereco: 'Av B, 456', bairro: 'Jardim', cidade: 'São Paulo', cep: '02000-000', uf: 'SP', habilitado: false }
+          { id:1, nome:'Carlos Silva', cpf:'123.456.789-00', telefone:'(11) 99999-1111', email:'carlos@email.com', dataNasc:'1985-05-10', profissao:'Engenheiro', endereco:'Rua A, 123', bairro:'Centro', cidade:'São Paulo', cep:'01000-000', uf:'SP', habilitado:true },
+          { id:2, nome:'Mariana Lima', cpf:'987.654.321-00', telefone:'(11) 99999-2222', email:'mariana@email.com', dataNasc:'1990-08-22', profissao:'Arquiteta', endereco:'Av B, 456', bairro:'Jardim', cidade:'São Paulo', cep:'02000-000', uf:'SP', habilitado:false }
         ]);
       }
       if (!localStorage.getItem('leads')) {
         setData('leads', [
-          { id: 1, nome: 'João Souza', telefone: '(11) 98888-7777', origem: 'OLX', status: 'novo' },
-          { id: 2, nome: 'Ana Costa', telefone: '(11) 97777-6666', origem: 'Instagram', status: 'contatado' }
+          { id:1, nome:'João Souza', telefone:'(11) 98888-7777', origem:'OLX', status:'novo' },
+          { id:2, nome:'Ana Costa', telefone:'(11) 97777-6666', origem:'Instagram', status:'contatado' }
         ]);
       }
       if (!localStorage.getItem('vendas')) {
         setData('vendas', [
-          { id: 1, veiculoId: 1, clienteId: 1, data: '2026-07-20', valor: '115000' }
+          { id:1, veiculoId:1, clienteId:1, data:'2026-07-20', valor:'115000' }
         ]);
         let veiculos = getData('veiculos');
-        veiculos = veiculos.map(v => v.id === 1 ? { ...v, status: 'vendido' } : v);
+        veiculos = veiculos.map(v => v.id === 1 ? { ...v, status:'vendido' } : v);
         setData('veiculos', veiculos);
       }
     }
     initData();
 
-    // ============================
-    //  RENDERIZAÇÃO DAS PÁGINAS
-    // ============================
     function renderPage(page) {
       let html = '';
       switch (page) {
@@ -623,16 +495,13 @@
       attachEvents(page);
     }
 
-    // ============================
-    //  DASHBOARD
-    // ============================
+    // ===== DASHBOARD =====
     function renderDashboard() {
       const veiculos = getData('veiculos');
       const clientes = getData('clientes');
       const leads = getData('leads');
       const vendas = getData('vendas');
       const disponiveis = veiculos.filter(v => v.status === 'disponivel').length;
-
       return `
         <h1 class="page-title">Dashboard</h1>
         <p class="page-subtitle">Visão geral da revenda</p>
@@ -642,7 +511,7 @@
           <div class="card"><div class="card-label">Vendas realizadas</div><div class="card-value">${vendas.length}</div></div>
           <div class="card"><div class="card-label">Leads ativos</div><div class="card-value">${leads.length}</div></div>
         </div>
-        <h2 style="font-size:18px; margin-top: 20px;">Últimas vendas</h2>
+        <h2 style="font-size:18px; margin-top:20px;">Últimas vendas</h2>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Veículo</th><th>Cliente</th><th>Data</th><th>Valor</th></tr></thead>
@@ -658,12 +527,10 @@
       `;
     }
 
-    // ============================
-    //  LEADS
-    // ============================
+    // ===== LEADS =====
     function renderLeads() {
       const leads = getData('leads');
-      const statusOptions = ['novo', 'contatado', 'negociação', 'perdido', 'convertido'];
+      const statusOptions = ['novo','contatado','negociação','perdido','convertido'];
       let html = `
         <div class="page-header-row">
           <div><h1 class="page-title">Leads</h1><p class="page-subtitle">Potenciais clientes</p></div>
@@ -706,9 +573,7 @@
       return html;
     }
 
-    // ============================
-    //  VEÍCULOS
-    // ============================
+    // ===== VEÍCULOS =====
     function renderVeiculos() {
       const veiculos = getData('veiculos');
       let html = `
@@ -735,15 +600,14 @@
           <div><label>Renavam</label><input id="veic-renavam" placeholder="12345678901" /></div>
           <div><label>Chassi</label><input id="veic-chassi" placeholder="9BD12345678901234" /></div>
           <div><label>Valor (R$)</label><input id="veic-valor" placeholder="115000" /></div>
-          <div class="full-width"><label>Descrição</label><textarea id="veic-desc" rows="2"></textarea></div>
-          <div class="full-width">
-            <label>Foto do veículo</label>
-            <input type="file" id="veic-foto" accept="image/*" />
-            <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
-              <img id="veic-preview-foto" class="img-preview" style="display:none;" />
-              <span id="veic-nome-foto" style="color:var(--text-secondary);font-size:13px;"></span>
-            </div>
+          <div><label>Status</label>
+            <select id="veic-status">
+              <option value="disponivel">Disponível</option>
+              <option value="vendido">Vendido</option>
+              <option value="reservado">Reservado</option>
+            </select>
           </div>
+          <div class="full-width"><label>Descrição</label><textarea id="veic-desc" rows="2"></textarea></div>
           <div class="full-width">
             <label>CRV (Foto ou PDF)</label>
             <input type="file" id="veic-crv" accept="image/*,.pdf" />
@@ -751,6 +615,13 @@
               <img id="veic-preview-crv" class="img-preview" style="display:none;" />
               <span id="veic-nome-crv" style="color:var(--text-secondary);font-size:13px;"></span>
               <button class="btn-secondary" onclick="simularOCR()">🔍 Reconhecer dados</button>
+            </div>
+          </div>
+          <div class="full-width">
+            <label>Foto do Veículo</label>
+            <input type="file" id="veic-foto" accept="image/*" />
+            <div style="margin-top:8px;">
+              <img id="veic-preview-foto" class="img-preview" style="display:none;" />
             </div>
           </div>
           <div class="form-actions">
@@ -762,8 +633,10 @@
           <table>
             <thead><tr><th>Foto</th><th>Veículo</th><th>Ano</th><th>Cor</th><th>Km</th><th>Placa</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody>
-              ${veiculos.map(v => `
-                <tr>
+              ${veiculos.map(v => {
+                const statusLabel = { disponivel:'Disponível', vendido:'Vendido', reservado:'Reservado' }[v.status] || v.status;
+                const badgeClass = v.status === 'disponivel' ? 'badge-success' : v.status === 'reservado' ? 'badge-warning' : '';
+                return `<tr>
                   <td>${v.foto ? `<img src="${v.foto}" class="img-preview" />` : '—'}</td>
                   <td>${v.marca} ${v.modelo}</td>
                   <td>${v.ano}</td>
@@ -771,14 +644,14 @@
                   <td>${v.km}</td>
                   <td>${v.placa}</td>
                   <td>R$ ${v.valor}</td>
-                  <td><span class="badge ${v.status === 'disponivel' ? 'badge-success' : ''}">${v.status}</span></td>
+                  <td><span class="badge ${badgeClass}">${statusLabel}</span></td>
                   <td>
                     <button class="btn-secondary" onclick="editarVeiculo(${v.id})">✎</button>
                     <button class="btn-secondary" onclick="excluirVeiculo(${v.id})">✕</button>
                     ${v.status === 'disponivel' ? `<button class="btn-whatsapp" onclick="enviarWhatsApp(${v.id})">📱 WhatsApp</button>` : ''}
                   </td>
-                </tr>
-              `).join('') || '<tr><td colspan="9">Nenhum veículo cadastrado.</td></tr>'}
+                </tr>`;
+              }).join('') || '<tr><td colspan="9">Nenhum veículo cadastrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -786,9 +659,7 @@
       return html;
     }
 
-    // ============================
-    //  CLIENTES
-    // ============================
+    // ===== CLIENTES =====
     function renderClientes() {
       const clientes = getData('clientes');
       let html = `
@@ -798,6 +669,7 @@
         </div>
         <div id="form-cliente" class="form-grid hidden">
           <div><label>Nome</label><input id="cli-nome" placeholder="Nome completo" /></div>
+          <div><label>CPF</label><input id="cli-cpf" placeholder="000.000.000-00" /></div>
           <div><label>Telefone</label><input id="cli-telefone" placeholder="(00) 00000-0000" /></div>
           <div><label>E-mail</label><input id="cli-email" placeholder="email@exemplo.com" /></div>
           <div><label>Data de Nascimento</label><input id="cli-data-nasc" type="date" /></div>
@@ -818,11 +690,12 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nome</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Habilitado</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Habilitado</th><th>Ações</th></tr></thead>
             <tbody>
               ${clientes.map(c => `
                 <tr>
                   <td>${c.nome}</td>
+                  <td>${c.cpf || ''}</td>
                   <td>${c.telefone}</td>
                   <td>${c.email}</td>
                   <td>${c.cidade}</td>
@@ -832,7 +705,7 @@
                     <button class="btn-secondary" onclick="excluirCliente(${c.id})">✕</button>
                   </td>
                 </tr>
-              `).join('') || '<tr><td colspan="6">Nenhum cliente cadastrado.</td></tr>'}
+              `).join('') || '<tr><td colspan="7">Nenhum cliente cadastrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -840,9 +713,7 @@
       return html;
     }
 
-    // ============================
-    //  VENDAS
-    // ============================
+    // ===== VENDAS =====
     function renderVendas() {
       const veiculos = getData('veiculos');
       const clientes = getData('clientes');
@@ -887,7 +758,10 @@
                   <td>${v.data}</td>
                   <td>R$ ${v.valor}</td>
                   <td><button class="btn-pdf" onclick="gerarContrato(${v.id})">📄 PDF</button></td>
-                  <td><button class="btn-secondary" onclick="excluirVenda(${v.id})">✕</button></td>
+                  <td>
+                    <button class="btn-secondary" onclick="editarVenda(${v.id})">✎</button>
+                    <button class="btn-secondary" onclick="excluirVenda(${v.id})">✕</button>
+                  </td>
                 </tr>`;
               }).join('') || '<tr><td colspan="6">Nenhuma venda registrada.</td></tr>'}
             </tbody>
@@ -898,10 +772,8 @@
     }
 
     // ============================
-    //  FUNÇÕES DE EVENTOS E CRUD
+    //  CRUD LEAD
     // ============================
-
-    // ---- LEADS ----
     let editLeadId = null;
     window.abrirFormLead = function(id) {
       const form = document.getElementById('form-lead');
@@ -936,9 +808,7 @@
         renderPage('leads');
       }
     };
-    window.editarLead = function(id) {
-      abrirFormLead(id);
-    };
+    window.editarLead = function(id) { abrirFormLead(id); };
 
     document.addEventListener('click', function(e) {
       if (e.target.id === 'salvar-lead') {
@@ -960,20 +830,21 @@
       }
     });
 
-    // ---- VEÍCULOS ----
+    // ============================
+    //  CRUD VEÍCULO
+    // ============================
     let editVeiculoId = null;
-    let fotoDataURL = '';
     let crvDataURL = '';
+    let fotoDataURL = '';
 
     window.abrirFormVeiculo = function(id) {
       const form = document.getElementById('form-veiculo');
       form.classList.remove('hidden');
-      document.getElementById('veic-preview-foto').style.display = 'none';
-      document.getElementById('veic-nome-foto').textContent = '';
       document.getElementById('veic-preview-crv').style.display = 'none';
+      document.getElementById('veic-preview-foto').style.display = 'none';
       document.getElementById('veic-nome-crv').textContent = '';
-      fotoDataURL = '';
       crvDataURL = '';
+      fotoDataURL = '';
 
       const marcaSelect = document.getElementById('veic-marca');
       const modeloSelect = document.getElementById('veic-modelo');
@@ -1003,16 +874,17 @@
           document.getElementById('veic-renavam').value = v.renavam;
           document.getElementById('veic-chassi').value = v.chassi;
           document.getElementById('veic-valor').value = v.valor;
+          document.getElementById('veic-status').value = v.status || 'disponivel';
           document.getElementById('veic-desc').value = v.descricao || '';
-          if (v.foto) {
-            document.getElementById('veic-preview-foto').src = v.foto;
-            document.getElementById('veic-preview-foto').style.display = 'block';
-            fotoDataURL = v.foto;
-          }
           if (v.crv) {
             document.getElementById('veic-preview-crv').src = v.crv;
             document.getElementById('veic-preview-crv').style.display = 'block';
             crvDataURL = v.crv;
+          }
+          if (v.foto) {
+            document.getElementById('veic-preview-foto').src = v.foto;
+            document.getElementById('veic-preview-foto').style.display = 'block';
+            fotoDataURL = v.foto;
           }
           editVeiculoId = id;
         }
@@ -1027,22 +899,23 @@
         document.getElementById('veic-renavam').value = '';
         document.getElementById('veic-chassi').value = '';
         document.getElementById('veic-valor').value = '';
+        document.getElementById('veic-status').value = 'disponivel';
         document.getElementById('veic-desc').value = '';
-        document.getElementById('veic-foto').value = '';
         document.getElementById('veic-crv').value = '';
-        document.getElementById('veic-preview-foto').style.display = 'none';
+        document.getElementById('veic-foto').value = '';
         document.getElementById('veic-preview-crv').style.display = 'none';
+        document.getElementById('veic-preview-foto').style.display = 'none';
         editVeiculoId = null;
-        fotoDataURL = '';
         crvDataURL = '';
+        fotoDataURL = '';
       }
     };
 
     window.cancelarFormVeiculo = function() {
       document.getElementById('form-veiculo').classList.add('hidden');
       editVeiculoId = null;
-      fotoDataURL = '';
       crvDataURL = '';
+      fotoDataURL = '';
     };
 
     window.excluirVeiculo = function(id) {
@@ -1054,13 +927,10 @@
       }
     };
 
-    window.editarVeiculo = function(id) {
-      abrirFormVeiculo(id);
-    };
+    window.editarVeiculo = function(id) { abrirFormVeiculo(id); };
 
     window.simularOCR = function() {
-      const marcas = MARCAS;
-      const marca = marcas[Math.floor(Math.random() * marcas.length)];
+      const marca = MARCAS[Math.floor(Math.random() * MARCAS.length)];
       const modelos = MODELOS_BY_MARCA[marca] || ['Modelo'];
       const modelo = modelos[Math.floor(Math.random() * modelos.length)];
       const ano = (2020 + Math.floor(Math.random() * 6)).toString();
@@ -1089,24 +959,10 @@
       document.getElementById('veic-chassi').value = chassi;
       document.getElementById('veic-valor').value = valor;
       document.getElementById('veic-desc').value = 'Veículo reconhecido automaticamente.';
-      alert('Dados simulados preenchidos! (Isso é apenas uma demonstração. Em produção, use uma API de OCR real.)');
+      alert('Dados simulados preenchidos! (Demonstração)');
     };
 
-    // Upload da foto
     document.addEventListener('change', function(e) {
-      if (e.target && e.target.id === 'veic-foto') {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            fotoDataURL = ev.target.result;
-            document.getElementById('veic-preview-foto').src = fotoDataURL;
-            document.getElementById('veic-preview-foto').style.display = 'block';
-            document.getElementById('veic-nome-foto').textContent = file.name;
-          };
-          reader.readAsDataURL(file);
-        }
-      }
       if (e.target && e.target.id === 'veic-crv') {
         const file = e.target.files[0];
         if (file) {
@@ -1116,6 +972,18 @@
             document.getElementById('veic-preview-crv').src = crvDataURL;
             document.getElementById('veic-preview-crv').style.display = 'block';
             document.getElementById('veic-nome-crv').textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+      if (e.target && e.target.id === 'veic-foto') {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            fotoDataURL = ev.target.result;
+            document.getElementById('veic-preview-foto').src = fotoDataURL;
+            document.getElementById('veic-preview-foto').style.display = 'block';
           };
           reader.readAsDataURL(file);
         }
@@ -1134,6 +1002,7 @@
         const renavam = document.getElementById('veic-renavam').value.trim();
         const chassi = document.getElementById('veic-chassi').value.trim().toUpperCase();
         const valor = document.getElementById('veic-valor').value.trim();
+        const status = document.getElementById('veic-status').value;
         const desc = document.getElementById('veic-desc').value.trim();
 
         if (!marca || !modelo || !ano || !cor || !combustivel || !km || !placa || !renavam || !chassi || !valor) {
@@ -1142,10 +1011,10 @@
 
         let veiculos = getData('veiculos');
         if (editVeiculoId) {
-          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, foto: fotoDataURL, crv: crvDataURL } : v);
+          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, status, descricao: desc, crv: crvDataURL, foto: fotoDataURL } : v);
         } else {
           const newId = veiculos.length ? Math.max(...veiculos.map(v => v.id)) + 1 : 1;
-          veiculos.push({ id: newId, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, foto: fotoDataURL, crv: crvDataURL, status: 'disponivel' });
+          veiculos.push({ id: newId, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, status, descricao: desc, crv: crvDataURL, foto: fotoDataURL });
         }
         setData('veiculos', veiculos);
         cancelarFormVeiculo();
@@ -1153,17 +1022,17 @@
       }
     });
 
-    // WhatsApp
     window.enviarWhatsApp = function(id) {
       const veiculos = getData('veiculos');
       const v = veiculos.find(x => x.id === id);
       if (!v) return;
       const msg = `*Veículo disponível:*\n${v.marca} ${v.modelo}\nAno: ${v.ano}\nCor: ${v.cor}\nKm: ${v.km}\nPlaca: ${v.placa}\nPreço: R$ ${v.valor}\nDescrição: ${v.descricao || '—'}\n\nEntre em contato para mais informações.`;
-      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank');
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     };
 
-    // ---- CLIENTES ----
+    // ============================
+    //  CRUD CLIENTE
+    // ============================
     let editClienteId = null;
     window.abrirFormCliente = function(id) {
       const form = document.getElementById('form-cliente');
@@ -1173,6 +1042,7 @@
         const c = clientes.find(x => x.id === id);
         if (c) {
           document.getElementById('cli-nome').value = c.nome;
+          document.getElementById('cli-cpf').value = c.cpf || '';
           document.getElementById('cli-telefone').value = c.telefone;
           document.getElementById('cli-email').value = c.email;
           document.getElementById('cli-data-nasc').value = c.dataNasc || '';
@@ -1187,6 +1057,7 @@
         }
       } else {
         document.getElementById('cli-nome').value = '';
+        document.getElementById('cli-cpf').value = '';
         document.getElementById('cli-telefone').value = '';
         document.getElementById('cli-email').value = '';
         document.getElementById('cli-data-nasc').value = '';
@@ -1212,13 +1083,12 @@
         renderPage('clientes');
       }
     };
-    window.editarCliente = function(id) {
-      abrirFormCliente(id);
-    };
+    window.editarCliente = function(id) { abrirFormCliente(id); };
 
     document.addEventListener('click', function(e) {
       if (e.target.id === 'salvar-cliente') {
         const nome = document.getElementById('cli-nome').value.trim();
+        const cpf = document.getElementById('cli-cpf').value.trim();
         const telefone = document.getElementById('cli-telefone').value.trim();
         const email = document.getElementById('cli-email').value.trim();
         const dataNasc = document.getElementById('cli-data-nasc').value;
@@ -1230,13 +1100,13 @@
         const uf = document.getElementById('cli-uf').value.trim().toUpperCase();
         const habilitado = document.getElementById('cli-habilitado').checked;
 
-        if (!nome || !telefone || !email) return alert('Preencha nome, telefone e e-mail.');
+        if (!nome || !cpf || !telefone || !email) return alert('Preencha nome, CPF, telefone e e-mail.');
         let clientes = getData('clientes');
         if (editClienteId) {
-          clientes = clientes.map(c => c.id === editClienteId ? { ...c, nome, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado } : c);
+          clientes = clientes.map(c => c.id === editClienteId ? { ...c, nome, cpf, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado } : c);
         } else {
           const newId = clientes.length ? Math.max(...clientes.map(c => c.id)) + 1 : 1;
-          clientes.push({ id: newId, nome, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado });
+          clientes.push({ id: newId, nome, cpf, telefone, email, dataNasc, profissao, endereco, bairro, cidade, cep, uf, habilitado });
         }
         setData('clientes', clientes);
         cancelarFormCliente();
@@ -1244,15 +1114,35 @@
       }
     });
 
-    // ---- VENDAS ----
-    window.abrirFormVenda = function() {
-      document.getElementById('form-venda').classList.remove('hidden');
+    // ============================
+    //  CRUD VENDA
+    // ============================
+    let editVendaId = null;
+    window.abrirFormVenda = function(id) {
+      const form = document.getElementById('form-venda');
+      form.classList.remove('hidden');
       document.getElementById('venda-data').value = new Date().toISOString().slice(0,10);
       document.getElementById('venda-valor').value = '';
+      if (id) {
+        const vendas = getData('vendas');
+        const v = vendas.find(x => x.id === id);
+        if (v) {
+          document.getElementById('venda-veiculo').value = v.veiculoId;
+          document.getElementById('venda-cliente').value = v.clienteId;
+          document.getElementById('venda-data').value = v.data;
+          document.getElementById('venda-valor').value = v.valor;
+          editVendaId = id;
+        }
+      } else {
+        editVendaId = null;
+      }
     };
     window.cancelarFormVenda = function() {
       document.getElementById('form-venda').classList.add('hidden');
+      editVendaId = null;
     };
+    window.editarVenda = function(id) { abrirFormVenda(id); };
+
     window.excluirVenda = function(id) {
       if (confirm('Excluir esta venda? O veículo voltará ao estoque.')) {
         let vendas = getData('vendas');
@@ -1279,18 +1169,24 @@
         const veic = veiculos.find(v => v.id === veiculoId);
         if (!veic || veic.status !== 'disponivel') return alert('Veículo não está mais disponível.');
         let vendas = getData('vendas');
-        const newId = vendas.length ? Math.max(...vendas.map(v => v.id)) + 1 : 1;
-        vendas.push({ id: newId, veiculoId, clienteId, data, valor });
+        if (editVendaId) {
+          // Edição: atualizar dados, mas o veículo já está vendido, não alterar status
+          vendas = vendas.map(v => v.id === editVendaId ? { ...v, veiculoId, clienteId, data, valor } : v);
+        } else {
+          const newId = vendas.length ? Math.max(...vendas.map(v => v.id)) + 1 : 1;
+          vendas.push({ id: newId, veiculoId, clienteId, data, valor });
+          // Atualiza status do veículo para vendido
+          veiculos = veiculos.map(v => v.id === veiculoId ? { ...v, status: 'vendido' } : v);
+          setData('veiculos', veiculos);
+        }
         setData('vendas', vendas);
-        veiculos = veiculos.map(v => v.id === veiculoId ? { ...v, status: 'vendido' } : v);
-        setData('veiculos', veiculos);
         cancelarFormVenda();
         renderPage('vendas');
       }
     });
 
     // ============================
-    //  GERAR CONTRATO EM PDF
+    //  GERAR CONTRATO PDF (CORRIGIDO)
     // ============================
     window.gerarContrato = function(vendaId) {
       const vendas = getData('vendas');
@@ -1302,13 +1198,12 @@
       const cli = clientes.find(c => c.id === venda.clienteId);
       if (!veic || !cli) return alert('Dados do veículo ou cliente não encontrados.');
 
-      // Monta o HTML do contrato
       const contratoHTML = `
-        <div class="contrato-pdf" id="contrato-conteudo">
+        <div class="contrato-pdf">
           <h1>CONTRATO DE COMPRA E VENDA</h1>
           <hr />
           <p><strong>VENDEDOR:</strong> DANIEL MINOWA DA SILVA LTDA, CNPJ 61.867.795/0001-24, Av. Américo Barreira, 909, loja 06 - Demócrito Rocha - CEP 60440-093 - Fortaleza-CE.</p>
-          <p><strong>COMPRADOR:</strong> ${cli.nome}, CPF: _______________, Endereço: ${cli.endereco || ''}, ${cli.bairro || ''}, ${cli.cidade || ''} - ${cli.uf || ''}, CEP: ${cli.cep || ''}, Telefone: ${cli.telefone}, E-mail: ${cli.email}</p>
+          <p><strong>COMPRADOR:</strong> ${cli.nome}, CPF: ${cli.cpf || '______________'}, Endereço: ${cli.endereco || ''}, ${cli.bairro || ''}, ${cli.cidade || ''} - ${cli.uf || ''}, CEP: ${cli.cep || ''}, Telefone: ${cli.telefone}, E-mail: ${cli.email}</p>
           <hr />
           <p>As partes acima qualificadas resolvem entabular a presente compra e venda na forma e termos a seguir expostos:</p>
 
@@ -1387,32 +1282,27 @@
         </div>
       `;
 
-      // Criar um container visível para o PDF
+      // Cria um container invisível e gera o PDF corretamente
       const container = document.createElement('div');
+      container.innerHTML = contratoHTML;
       container.style.position = 'fixed';
-      container.style.left = '0';
+      container.style.left = '-9999px';
       container.style.top = '0';
-      container.style.width = '100%';
-      container.style.height = '100%';
-      container.style.background = 'rgba(0,0,0,0.5)';
-      container.style.zIndex = '9999';
-      container.style.display = 'flex';
-      container.style.alignItems = 'center';
-      container.style.justifyContent = 'center';
-      container.style.overflow = 'auto';
-      container.innerHTML = `<div style="background:white; padding:20px; border-radius:8px; max-width:800px; max-height:90vh; overflow:auto;">${contratoHTML}</div>`;
+      container.style.width = '800px';
+      container.style.background = 'white';
       document.body.appendChild(container);
 
-      // Gerar PDF a partir do conteúdo visível
-      const element = container.querySelector('.contrato-pdf');
+      // Força o reflow para garantir que tudo seja renderizado
+      container.getBoundingClientRect();
+
       const opt = {
         margin:        [0.5, 0.5, 0.5, 0.5],
         filename:     `Contrato_Venda_${veic.modelo}_${cli.nome}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, letterRendering: true },
+        html2canvas:  { scale: 2, letterRendering: true, useCORS: true },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().set(opt).from(element).save().then(() => {
+      html2pdf().set(opt).from(container).save().then(() => {
         document.body.removeChild(container);
       }).catch(err => {
         console.error(err);
@@ -1425,6 +1315,7 @@
     //  INICIALIZAÇÃO
     // ============================
     showLogin();
+    // Para debug, descomente: showDashboard();
 
   })();
 </script>
