@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minowa — Gestão Automotiva</title>
+  <style>
+    /* ===== Variáveis (extraídas do CSS original) ===== */
+    :root {
+      --bg-page: #0c0c0d;
+      --bg-card: #161617;
+      --border: #262627;
+      --text-primary: #f5f5f5;
+      --text-secondary: #9a9a9c;
+      --accent: #e0263c;
+    }
+
+    /* ===== Reset & base ===== */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    a {
+      text-decoration: none;
+      color: var(--text-secondary);
+    }
+
+    /* ===== Páginas de autenticação (login / signup) ===== */
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 360px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+    .brand {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+    .auth-title {
+      font-size: 20px;
+      margin: 16px 0 20px;
+    }
+    .auth-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+    .auth-input {
+      background: var(--bg-page);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+    .auth-input:focus {
+      border-color: var(--accent);
+    }
+    .auth-button {
+      margin-top: 24px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .auth-button:hover {
+      opacity: 0.85;
+    }
+    .auth-link {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      cursor: pointer;
+    }
+    .auth-link:hover {
+      color: var(--text-primary);
+    }
+    .auth-error {
+      color: #ff5c5c;
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ===== Layout principal (dashboard) ===== */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sidebar .brand {
+      margin-bottom: 2px;
+    }
+    .sidebar .brand-sub {
+      margin-bottom: 28px;
+    }
+    .nav-item {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+    }
+    .nav-item.active {
+      background: rgba(224, 38, 60, 0.15);
+      color: var(--accent);
+    }
+    .sidebar-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+    .logout-button {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .logout-button:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-primary);
+    }
+
+    /* ===== Conteúdo principal ===== */
+    .main {
+      flex: 1;
+      padding: 32px 40px;
+    }
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    .page-subtitle {
+      color: var(--text-secondary);
+      margin: 0 0 24px;
+      font-size: 14px;
+    }
+    .page-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    /* ===== Cards ===== */
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .card-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .card-value {
+      font-size: 30px;
+      font-weight: 700;
+    }
+    .card-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    /* ===== Tabela / lista ===== */
+    .table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: auto;
+      margin-top: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      text-align: left;
+      padding: 14px 16px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(224, 38, 60, 0.15);
+      color: var(--accent);
+      padding: 2px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* ===== Utilitários ===== */
+    .hidden {
+      display: none !important;
+    }
+
+    /* ===== Responsivo ===== */
+    @media (max-width: 700px) {
+      .sidebar {
+        width: 180px;
+        padding: 16px 12px;
+      }
+      .main {
+        padding: 20px;
+      }
+      .card {
+        min-width: 140px;
+      }
+    }
+    @media (max-width: 550px) {
+      .layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 12px 16px;
+        align-items: center;
+      }
+      .sidebar .brand-sub {
+        margin-bottom: 0;
+        margin-left: 6px;
+      }
+      .sidebar .nav {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        order: 3;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .sidebar .nav-item {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      .sidebar-footer {
+        border-top: none;
+        padding-top: 0;
+        margin-left: auto;
+      }
+      .main {
+        padding: 16px;
+      }
+      .cards-row {
+        gap: 12px;
+      }
+      .card {
+        min-width: 120px;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- PÁGINA DE LOGIN                                              -->
+<!-- ============================================================ -->
+<div id="page-login" class="auth-page">
+  <div class="auth-card">
+    <div class="brand">MINOWA</div>
+    <div class="brand-sub">Gestão Automotiva</div>
+    <h1 class="auth-title">Entrar</h1>
+
+    <label class="auth-label">E-mail</label>
+    <input class="auth-input" id="login-email" type="email" placeholder="seu@email.com" />
+
+    <label class="auth-label">Senha</label>
+    <input class="auth-input" id="login-password" type="password" placeholder="••••••••" />
+
+    <div class="auth-error" id="login-error">E-mail ou senha inválidos.</div>
+
+    <button class="auth-button" id="login-btn">Entrar</button>
+
+    <a class="auth-link" id="go-to-signup">Ainda não tem conta? Criar acesso</a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PÁGINA DE CADASTRO                                           -->
+<!-- ============================================================ -->
+<div id="page-signup" class="auth-page hidden">
+  <div class="auth-card">
+    <div class="brand">MINOWA</div>
+    <div class="brand-sub">Gestão Automotiva</div>
+    <h1 class="auth-title">Criar acesso</h1>
+
+    <label class="auth-label">E-mail</label>
+    <input class="auth-input" id="signup-email" type="email" placeholder="seu@email.com" />
+
+    <label class="auth-label">Senha (mínimo 6 caracteres)</label>
+    <input class="auth-input" id="signup-password" type="password" placeholder="••••••••" />
+
+    <div class="auth-error" id="signup-error">Preencha todos os campos corretamente.</div>
+
+    <button class="auth-button" id="signup-btn">Criar conta</button>
+
+    <a class="auth-link" id="go-to-login">Já tem conta? Entrar</a>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD (principal)                                        -->
+<!-- ============================================================ -->
+<div id="page-dashboard" class="layout hidden">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="brand">MINOWA</div>
+      <div class="brand-sub">Gestão Automotiva</div>
+      <nav class="nav">
+        <div class="nav-item active" data-page="dashboard">Dashboard</div>
+        <div class="nav-item" data-page="veiculos">Veículos</div>
+        <div class="nav-item" data-page="clientes">Clientes</div>
+        <div class="nav-item" data-page="servicos">Serviços</div>
+      </nav>
+    </div>
+    <div class="sidebar-footer">
+      <button class="logout-button" id="logout-btn">Sair</button>
+    </div>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="main" id="main-content">
+    <!-- O conteúdo é renderizado via JavaScript -->
+  </main>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT                                                    -->
+<!-- ============================================================ -->
+<script>
+  (function() {
+    'use strict';
+
+    // ----- Elementos de navegação entre páginas de autenticação -----
+    const pageLogin = document.getElementById('page-login');
+    const pageSignup = document.getElementById('page-signup');
+    const pageDashboard = document.getElementById('page-dashboard');
+    const mainContent = document.getElementById('main-content');
+
+    const goToSignup = document.getElementById('go-to-signup');
+    const goToLogin = document.getElementById('go-to-login');
+
+    function showLogin() {
+      pageLogin.classList.remove('hidden');
+      pageSignup.classList.add('hidden');
+      pageDashboard.classList.add('hidden');
+    }
+    function showSignup() {
+      pageLogin.classList.add('hidden');
+      pageSignup.classList.remove('hidden');
+      pageDashboard.classList.add('hidden');
+    }
+    function showDashboard() {
+      pageLogin.classList.add('hidden');
+      pageSignup.classList.add('hidden');
+      pageDashboard.classList.remove('hidden');
+      renderDashboard('dashboard'); // página inicial do dashboard
+    }
+
+    goToSignup.addEventListener('click', showSignup);
+    goToLogin.addEventListener('click', showLogin);
+
+    // ----- Login simulado -----
+    const loginBtn = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+
+    loginBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (email === '' || password === '') {
+        loginError.style.display = 'block';
+        loginError.textContent = 'Preencha todos os campos.';
+        return;
+      }
+
+      // Simulação: qualquer e-mail/senha com mais de 3 caracteres é aceito
+      if (email.length > 3 && password.length > 3) {
+        loginError.style.display = 'none';
+        showDashboard();
+      } else {
+        loginError.style.display = 'block';
+        loginError.textContent = 'E-mail ou senha inválidos.';
+      }
+    });
+
+    // ----- Cadastro simulado -----
+    const signupBtn = document.getElementById('signup-btn');
+    const signupError = document.getElementById('signup-error');
+
+    signupBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('signup-email').value.trim();
+      const password = document.getElementById('signup-password').value.trim();
+
+      if (email === '' || password.length < 6) {
+        signupError.style.display = 'block';
+        signupError.textContent = 'E-mail válido e senha com no mínimo 6 caracteres.';
+        return;
+      }
+
+      signupError.style.display = 'none';
+      // Após cadastro, vai para o login
+      showLogin();
+      // Opcional: preencher e-mail no login
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = '';
+    });
+
+    // ----- Logout -----
+    document.getElementById('logout-btn').addEventListener('click', function() {
+      showLogin();
+      // Limpa campos de login
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-password').value = '';
+      loginError.style.display = 'none';
+    });
+
+    // ----- Navegação da sidebar -----
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        navItems.forEach(n => n.classList.remove('active'));
+        this.classList.add('active');
+        const page = this.dataset.page;
+        renderDashboard(page);
+      });
+    });
+
+    // ----- Renderização do conteúdo do dashboard -----
+    function renderDashboard(page) {
+      let html = '';
+
+      if (page === 'dashboard') {
+        html = `
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Visão geral da sua operação</p>
+
+          <div class="cards-row">
+            <div class="card">
+              <div class="card-label">Veículos em estoque</div>
+              <div class="card-value">47</div>
+              <div class="card-hint">+5 este mês</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Clientes ativos</div>
+              <div class="card-value">128</div>
+              <div class="card-hint">+12 esta semana</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Serviços realizados</div>
+              <div class="card-value">312</div>
+              <div class="card-hint">+23 em julho</div>
+            </div>
+          </div>
+
+          <h2 style="font-size:18px; font-weight:600; margin: 24px 0 8px;">Últimas movimentações</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Veículo</th><th>Cliente</th><th>Status</th><th>Data</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Fiat Toro 2022</td><td>Carlos Silva</td><td><span class="badge">Concluído</span></td><td>20/07/2026</td></tr>
+                <tr><td>VW Golf GTI</td><td>Mariana Lima</td><td><span class="badge">Em andamento</span></td><td>19/07/2026</td></tr>
+                <tr><td>Chevrolet Onix</td><td>Rafael Souza</td><td><span class="badge">Aguardando</span></td><td>18/07/2026</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (page === 'veiculos') {
+        html = `
+          <div class="page-header-row">
+            <div><h1 class="page-title">Veículos</h1><p class="page-subtitle">Gerencie sua frota</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Modelo</th><th>Ano</th><th>Placa</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Fiat Toro</td><td>2022</td><td>ABC-1234</td><td><span class="badge">Disponível</span></td></tr>
+                <tr><td>VW Golf</td><td>2023</td><td>DEF-5678</td><td><span class="badge">Vendido</span></td></tr>
+                <tr><td>Chevrolet Onix</td><td>2021</td><td>GHI-9012</td><td><span class="badge">Em manutenção</span></td></tr>
+                <tr><td>Hyundai HB20</td><td>2024</td><td>JKL-3456</td><td><span class="badge">Disponível</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (page === 'clientes') {
+        html = `
+          <div class="page-header-row">
+            <div><h1 class="page-title">Clientes</h1><p class="page-subtitle">Base de clientes</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Veículos</th></tr></thead>
+              <tbody>
+                <tr><td>Carlos Silva</td><td>carlos@email.com</td><td>(11) 99999-1111</td><td>2</td></tr>
+                <tr><td>Mariana Lima</td><td>mariana@email.com</td><td>(11) 99999-2222</td><td>1</td></tr>
+                <tr><td>Rafael Souza</td><td>rafael@email.com</td><td>(11) 99999-3333</td><td>3</td></tr>
+                <tr><td>Ana Paula</td><td>ana@email.com</td><td>(11) 99999-4444</td><td>1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (page === 'servicos') {
+        html = `
+          <div class="page-header-row">
+            <div><h1 class="page-title">Serviços</h1><p class="page-subtitle">Histórico de serviços</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Serviço</th><th>Veículo</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Troca de óleo</td><td>Fiat Toro</td><td>Carlos Silva</td><td>R$ 250,00</td><td><span class="badge">Concluído</span></td></tr>
+                <tr><td>Alinhamento</td><td>VW Golf</td><td>Mariana Lima</td><td>R$ 180,00</td><td><span class="badge">Em andamento</span></td></tr>
+                <tr><td>Revisão completa</td><td>Chevrolet Onix</td><td>Rafael Souza</td><td>R$ 750,00</td><td><span class="badge">Aguardando</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      mainContent.innerHTML = html;
+    }
+
+    // ----- Inicialização: exibe login -----
+    showLogin();
+
+    // Para teste rápido, descomente a linha abaixo se quiser ir direto ao dashboard:
+    // showDashboard();
+
+    // ----- (Opcional) Enter para login -----
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !pageLogin.classList.contains('hidden')) {
+        loginBtn.click();
+      }
+    });
+
+  })();
+</script>
+
+</body>
+</html>
