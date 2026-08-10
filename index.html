@@ -579,8 +579,8 @@
     function initData() {
       if (!localStorage.getItem('veiculos')) {
         setData('veiculos', [
-          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', cor: 'Prata', combustivel: 'Flex', km: 30000, placa: 'ABC-1234', renavam: '12345678901', chassi: '9BD12345678901234', valor: '115000', descricao: 'Único dono, revisões em dia', crv: '', status: 'disponivel' },
-          { id: 2, marca: 'Volkswagen', modelo: 'Golf', ano: '2021', cor: 'Vermelho', combustivel: 'Gasolina', km: 45000, placa: 'DEF-5678', renavam: '98765432109', chassi: '9BD98765432109876', valor: '98000', descricao: 'Completo, automático', crv: '', status: 'disponivel' }
+          { id: 1, marca: 'Fiat', modelo: 'Toro', ano: '2022', cor: 'Prata', combustivel: 'Flex', km: 30000, placa: 'ABC-1234', renavam: '12345678901', chassi: '9BD12345678901234', valor: '115000', descricao: 'Único dono, revisões em dia', foto: '', crv: '', status: 'disponivel' },
+          { id: 2, marca: 'Volkswagen', modelo: 'Golf', ano: '2021', cor: 'Vermelho', combustivel: 'Gasolina', km: 45000, placa: 'DEF-5678', renavam: '98765432109', chassi: '9BD98765432109876', valor: '98000', descricao: 'Completo, automático', foto: '', crv: '', status: 'disponivel' }
         ]);
       }
       if (!localStorage.getItem('clientes')) {
@@ -620,7 +620,6 @@
         default: html = '<p>Página não encontrada.</p>';
       }
       mainContent.innerHTML = html;
-      // Reatach event listeners específicos
       attachEvents(page);
     }
 
@@ -738,11 +737,19 @@
           <div><label>Valor (R$)</label><input id="veic-valor" placeholder="115000" /></div>
           <div class="full-width"><label>Descrição</label><textarea id="veic-desc" rows="2"></textarea></div>
           <div class="full-width">
+            <label>Foto do veículo</label>
+            <input type="file" id="veic-foto" accept="image/*" />
+            <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
+              <img id="veic-preview-foto" class="img-preview" style="display:none;" />
+              <span id="veic-nome-foto" style="color:var(--text-secondary);font-size:13px;"></span>
+            </div>
+          </div>
+          <div class="full-width">
             <label>CRV (Foto ou PDF)</label>
             <input type="file" id="veic-crv" accept="image/*,.pdf" />
             <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
-              <img id="veic-preview" class="img-preview" style="display:none;" />
-              <span id="veic-nome-arquivo" style="color:var(--text-secondary);font-size:13px;"></span>
+              <img id="veic-preview-crv" class="img-preview" style="display:none;" />
+              <span id="veic-nome-crv" style="color:var(--text-secondary);font-size:13px;"></span>
               <button class="btn-secondary" onclick="simularOCR()">🔍 Reconhecer dados</button>
             </div>
           </div>
@@ -753,10 +760,11 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Veículo</th><th>Ano</th><th>Cor</th><th>Km</th><th>Placa</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Foto</th><th>Veículo</th><th>Ano</th><th>Cor</th><th>Km</th><th>Placa</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody>
               ${veiculos.map(v => `
                 <tr>
+                  <td>${v.foto ? `<img src="${v.foto}" class="img-preview" />` : '—'}</td>
                   <td>${v.marca} ${v.modelo}</td>
                   <td>${v.ano}</td>
                   <td>${v.cor}</td>
@@ -770,7 +778,7 @@
                     ${v.status === 'disponivel' ? `<button class="btn-whatsapp" onclick="enviarWhatsApp(${v.id})">📱 WhatsApp</button>` : ''}
                   </td>
                 </tr>
-              `).join('') || '<tr><td colspan="8">Nenhum veículo cadastrado.</td></tr>'}
+              `).join('') || '<tr><td colspan="9">Nenhum veículo cadastrado.</td></tr>'}
             </tbody>
           </table>
         </div>
@@ -954,16 +962,19 @@
 
     // ---- VEÍCULOS ----
     let editVeiculoId = null;
+    let fotoDataURL = '';
     let crvDataURL = '';
 
     window.abrirFormVeiculo = function(id) {
       const form = document.getElementById('form-veiculo');
       form.classList.remove('hidden');
-      document.getElementById('veic-preview').style.display = 'none';
-      document.getElementById('veic-nome-arquivo').textContent = '';
+      document.getElementById('veic-preview-foto').style.display = 'none';
+      document.getElementById('veic-nome-foto').textContent = '';
+      document.getElementById('veic-preview-crv').style.display = 'none';
+      document.getElementById('veic-nome-crv').textContent = '';
+      fotoDataURL = '';
       crvDataURL = '';
 
-      // Preenche modelos conforme marca selecionada
       const marcaSelect = document.getElementById('veic-marca');
       const modeloSelect = document.getElementById('veic-modelo');
       marcaSelect.addEventListener('change', function() {
@@ -981,7 +992,6 @@
         const v = veiculos.find(x => x.id === id);
         if (v) {
           document.getElementById('veic-marca').value = v.marca;
-          // Dispara evento change para carregar modelos
           const evt = new Event('change');
           document.getElementById('veic-marca').dispatchEvent(evt);
           document.getElementById('veic-modelo').value = v.modelo;
@@ -994,9 +1004,14 @@
           document.getElementById('veic-chassi').value = v.chassi;
           document.getElementById('veic-valor').value = v.valor;
           document.getElementById('veic-desc').value = v.descricao || '';
+          if (v.foto) {
+            document.getElementById('veic-preview-foto').src = v.foto;
+            document.getElementById('veic-preview-foto').style.display = 'block';
+            fotoDataURL = v.foto;
+          }
           if (v.crv) {
-            document.getElementById('veic-preview').src = v.crv;
-            document.getElementById('veic-preview').style.display = 'block';
+            document.getElementById('veic-preview-crv').src = v.crv;
+            document.getElementById('veic-preview-crv').style.display = 'block';
             crvDataURL = v.crv;
           }
           editVeiculoId = id;
@@ -1013,9 +1028,12 @@
         document.getElementById('veic-chassi').value = '';
         document.getElementById('veic-valor').value = '';
         document.getElementById('veic-desc').value = '';
+        document.getElementById('veic-foto').value = '';
         document.getElementById('veic-crv').value = '';
-        document.getElementById('veic-preview').style.display = 'none';
+        document.getElementById('veic-preview-foto').style.display = 'none';
+        document.getElementById('veic-preview-crv').style.display = 'none';
         editVeiculoId = null;
+        fotoDataURL = '';
         crvDataURL = '';
       }
     };
@@ -1023,6 +1041,7 @@
     window.cancelarFormVeiculo = function() {
       document.getElementById('form-veiculo').classList.add('hidden');
       editVeiculoId = null;
+      fotoDataURL = '';
       crvDataURL = '';
     };
 
@@ -1039,7 +1058,6 @@
       abrirFormVeiculo(id);
     };
 
-    // Simular OCR - preenche campos com dados aleatórios
     window.simularOCR = function() {
       const marcas = MARCAS;
       const marca = marcas[Math.floor(Math.random() * marcas.length)];
@@ -1057,7 +1075,6 @@
       const chassi = '9BD' + (100000000000000 + Math.floor(Math.random()*900000000000000)).toString().slice(0,14);
       const valor = (50000 + Math.floor(Math.random()*150000)).toString();
 
-      // Preenche os campos
       const marcaSelect = document.getElementById('veic-marca');
       marcaSelect.value = marca;
       const evt = new Event('change');
@@ -1075,17 +1092,30 @@
       alert('Dados simulados preenchidos! (Isso é apenas uma demonstração. Em produção, use uma API de OCR real.)');
     };
 
-    // Upload da CRV
+    // Upload da foto
     document.addEventListener('change', function(e) {
+      if (e.target && e.target.id === 'veic-foto') {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            fotoDataURL = ev.target.result;
+            document.getElementById('veic-preview-foto').src = fotoDataURL;
+            document.getElementById('veic-preview-foto').style.display = 'block';
+            document.getElementById('veic-nome-foto').textContent = file.name;
+          };
+          reader.readAsDataURL(file);
+        }
+      }
       if (e.target && e.target.id === 'veic-crv') {
         const file = e.target.files[0];
         if (file) {
           const reader = new FileReader();
           reader.onload = function(ev) {
             crvDataURL = ev.target.result;
-            document.getElementById('veic-preview').src = crvDataURL;
-            document.getElementById('veic-preview').style.display = 'block';
-            document.getElementById('veic-nome-arquivo').textContent = file.name;
+            document.getElementById('veic-preview-crv').src = crvDataURL;
+            document.getElementById('veic-preview-crv').style.display = 'block';
+            document.getElementById('veic-nome-crv').textContent = file.name;
           };
           reader.readAsDataURL(file);
         }
@@ -1112,10 +1142,10 @@
 
         let veiculos = getData('veiculos');
         if (editVeiculoId) {
-          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, crv: crvDataURL } : v);
+          veiculos = veiculos.map(v => v.id === editVeiculoId ? { ...v, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, foto: fotoDataURL, crv: crvDataURL } : v);
         } else {
           const newId = veiculos.length ? Math.max(...veiculos.map(v => v.id)) + 1 : 1;
-          veiculos.push({ id: newId, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, crv: crvDataURL, status: 'disponivel' });
+          veiculos.push({ id: newId, marca, modelo, ano, cor, combustivel, km, placa, renavam, chassi, valor, descricao: desc, foto: fotoDataURL, crv: crvDataURL, status: 'disponivel' });
         }
         setData('veiculos', veiculos);
         cancelarFormVeiculo();
@@ -1274,7 +1304,7 @@
 
       // Monta o HTML do contrato
       const contratoHTML = `
-        <div class="contrato-pdf">
+        <div class="contrato-pdf" id="contrato-conteudo">
           <h1>CONTRATO DE COMPRA E VENDA</h1>
           <hr />
           <p><strong>VENDEDOR:</strong> DANIEL MINOWA DA SILVA LTDA, CNPJ 61.867.795/0001-24, Av. Américo Barreira, 909, loja 06 - Demócrito Rocha - CEP 60440-093 - Fortaleza-CE.</p>
@@ -1357,15 +1387,24 @@
         </div>
       `;
 
-      // Cria um container temporário para gerar o PDF
+      // Criar um container visível para o PDF
       const container = document.createElement('div');
-      container.innerHTML = contratoHTML;
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
+      container.style.position = 'fixed';
+      container.style.left = '0';
       container.style.top = '0';
+      container.style.width = '100%';
+      container.style.height = '100%';
+      container.style.background = 'rgba(0,0,0,0.5)';
+      container.style.zIndex = '9999';
+      container.style.display = 'flex';
+      container.style.alignItems = 'center';
+      container.style.justifyContent = 'center';
+      container.style.overflow = 'auto';
+      container.innerHTML = `<div style="background:white; padding:20px; border-radius:8px; max-width:800px; max-height:90vh; overflow:auto;">${contratoHTML}</div>`;
       document.body.appendChild(container);
 
-      // Usa a biblioteca html2pdf para gerar o PDF
+      // Gerar PDF a partir do conteúdo visível
+      const element = container.querySelector('.contrato-pdf');
       const opt = {
         margin:        [0.5, 0.5, 0.5, 0.5],
         filename:     `Contrato_Venda_${veic.modelo}_${cli.nome}.pdf`,
@@ -1373,7 +1412,11 @@
         html2canvas:  { scale: 2, letterRendering: true },
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().set(opt).from(container).save().then(() => {
+      html2pdf().set(opt).from(element).save().then(() => {
+        document.body.removeChild(container);
+      }).catch(err => {
+        console.error(err);
+        alert('Erro ao gerar PDF. Tente novamente.');
         document.body.removeChild(container);
       });
     };
@@ -1382,8 +1425,6 @@
     //  INICIALIZAÇÃO
     // ============================
     showLogin();
-    // Para pular login (debug), descomente a linha abaixo:
-    // showDashboard();
 
   })();
 </script>
