@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import EmpresaForm from "@/components/configuracoes/EmpresaForm";
+import IntegracaoOlxPanel from "@/components/configuracoes/IntegracaoOlxPanel";
 export const dynamic = "force-dynamic";
 const TABS = [
 { id: "empresa", label: "🏢 Empresa" },
@@ -91,7 +92,8 @@ Nenhum usuário cadastrado.
 </div>
 </div>
 )}
-{abaAtiva !== "empresa" && abaAtiva !== "usuarios" && (
+{abaAtiva === "integracoes" && <IntegracaoOlxPanel />}
+{abaAtiva !== "empresa" && abaAtiva !== "usuarios" && abaAtiva !== "integracoes" && (
 <div className="widget-card">
 <p className="empty-state">
 Esta aba ({TABS.find((t) => t.id === abaAtiva)?.label}) ainda está em construção.
